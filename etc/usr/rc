@@ -226,8 +226,11 @@ stop|down)
 	fi
 esac
 
-d=
+# End here if the packages are disabled.
+if disabled pkg; then exit; fi
+
 # Let packages run their own scripts
+d=
 for d in /usr/local/etc/rc.d /usr/pkg/etc/rc.d
 do
 if [ -d "$d" -a -z "$bootcd" ]
