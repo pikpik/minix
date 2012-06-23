@@ -372,7 +372,12 @@ ${.CURDIR}/.gitignore: Makefile
 .if defined(MINIXDYNAMIC)
 LDFLAGS += -dynamic
 .else
+BUILD_OSTYPE!= uname -s
+.if ${BUILD_OSTYPE} == "Darwin"
+LDFLAGS += -Bstatic
+.else
 LDFLAGS += -static
+.endif
 .endif
 
 .endif	# HOSTPROG

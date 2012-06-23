@@ -4,12 +4,15 @@
 echo $0
 cd `dirname $0`
 
+# Use an available download utility
+FETCH=../../tools/fetch.sh
+
 # Fetch sources if not available
 if [ ! -d gmake ];
 then
 	if [ ! -f make-3.80.tar.bz2 ];
 	then
-		wget  ftp://ftp.gnu.org/gnu/make/make-3.80.tar.bz2
+		sh $FETCH ftp://ftp.gnu.org/gnu/make/make-3.80.tar.bz2
 	fi
 
 	tar -xf make-3.80.tar.bz2 && \

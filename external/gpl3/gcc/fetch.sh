@@ -4,12 +4,15 @@
 echo $0
 cd `dirname $0`
 
+# Use an available download utility
+FETCH=../../../tools/fetch.sh
+
 # Fetch sources if not available
 if [ ! -d dist ];
 then
 	if [ ! -f gcc-4.4.3.tar.bz2 ];
 	then
-		wget  ftp://ftp.gwdg.de/pub/misc/gcc/releases/gcc-4.4.3/gcc-4.4.3.tar.bz2
+		sh $FETCH ftp://ftp.gwdg.de/pub/misc/gcc/releases/gcc-4.4.3/gcc-4.4.3.tar.bz2
 	fi
 
 	tar -xf gcc-4.4.3.tar.bz2 && \

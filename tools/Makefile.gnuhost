@@ -21,7 +21,11 @@
 BUILD_OSTYPE!= uname -s
 .if ${BUILD_OSTYPE} == "Darwin"
 HOST_CFLAGS+=-O2 -no-cpp-precomp
+
+# Include GMP, MPFR, and MPC libraries from MacPorts.
+HOST_CFLAGS+=-I/opt/local/include -L/opt/local/lib
 .endif
+
 MAKE_PROGRAM?=	${MAKE}
 
 GNUHOSTDIST?=	${.CURDIR}/../../external/gpl3/gcc/dist/
