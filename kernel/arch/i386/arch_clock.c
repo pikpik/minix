@@ -1,4 +1,3 @@
-
 /* i386-specific clock functions. */
 
 #include <machine/ports.h>
@@ -347,7 +346,7 @@ short cpu_load(void)
 	current_idle = &idle->p_cycles; /* ptr to idle proc */
 
 	/* calculate load since last cpu_load invocation */
-	if (!(*last_tsc == 0)) {
+	if (*last_tsc != 0) {
 		tsc_delta = current_tsc - *last_tsc;
 		idle_delta = *current_idle - *last_idle;
 
