@@ -18,7 +18,6 @@
 #include <sys/types.h>
 #include <sys/ioc_disk.h>
 #include <minix/partition.h>
-#include <minix/u64.h>
 #include <time.h>
 #include <fcntl.h>
 #include <unistd.h>

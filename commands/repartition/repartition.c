@@ -11,7 +11,6 @@
 #include <minix/config.h>
 #include <minix/const.h>
 #include <minix/partition.h>
-#include <minix/u64.h>
 #include <machine/partition.h>
 #include <sys/stat.h>
 #include <string.h>

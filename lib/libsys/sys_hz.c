@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <sys/time.h>
 #include <sys/types.h>
-#include <minix/u64.h>
 #include <minix/config.h>
 #include <minix/const.h>
 

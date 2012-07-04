@@ -15,7 +15,6 @@
 #include <minix/com.h>
 #include <minix/const.h>
 #include <minix/endpoint.h>
-#include <minix/u64.h>
 #include <unistd.h>
 #include <minix/vfsif.h>
 #include "fproc.h"

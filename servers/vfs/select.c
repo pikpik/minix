@@ -11,7 +11,6 @@
 #include <sys/select.h>
 #include <sys/stat.h>
 #include <minix/com.h>
-#include <minix/u64.h>
 #include <string.h>
 #include <assert.h>
 

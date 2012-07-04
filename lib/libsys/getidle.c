@@ -18,7 +18,6 @@
 #define _MINIX 1
 #define _SYSTEM 1
 #include <lib.h>
-#include <minix/u64.h>
 #include <minix/sysutil.h>
 #include <minix/syslib.h>
 #include <minix/minlib.h>

@@ -1,5 +1,3 @@
-#include <minix/u64.h>
-
 #define AVL_UNIQUE(id) physr_ ## id
 #define AVL_HANDLE phys_region_t *
 #define AVL_KEY vir_bytes

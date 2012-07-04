@@ -19,7 +19,6 @@
 #include <minix/callnr.h>
 #include <minix/endpoint.h>
 #include <minix/com.h>
-#include <minix/u64.h>
 #include <a.out.h>
 #include <signal.h>
 #include <stdlib.h>

@@ -1,4 +1,3 @@
-
 /* Author: Ben Gras <beng@few.vu.nl>  17 march 2006 */
 /* Modified for ProcFS by Alen Stojanov and David van Moolenbroek */
 
@@ -35,7 +34,6 @@
 #include <minix/type.h>
 #include <minix/endpoint.h>
 #include <minix/const.h>
-#include <minix/u64.h>
 #include <paths.h>
 #include <minix/procfs.h>
 

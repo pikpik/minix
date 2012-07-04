@@ -2,7 +2,6 @@
 #include "syslib.h"
 
 #include <minix/vm.h>
-#include <minix/u64.h>
 
 /*===========================================================================*
  *                                vm_forgetblocks		     	*

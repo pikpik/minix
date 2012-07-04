@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <minix/ioctl.h>
-#include <minix/u64.h>
 #include <sys/ioc_fbd.h>
 #include <unistd.h>
 #include <fcntl.h>

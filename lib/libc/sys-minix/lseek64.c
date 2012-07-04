@@ -3,7 +3,6 @@
 #include <lib.h>
 
 #include <unistd.h>
-#include <minix/u64.h>
 
 int lseek64(fd, offset, whence, newpos)
 int fd;

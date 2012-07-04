@@ -3,7 +3,6 @@
 #include "arch_proto.h"
 #include "glo.h"
 #include <minix/minlib.h>
-#include <minix/u64.h>
 
 #include "apic.h"
 

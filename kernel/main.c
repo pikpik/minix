@@ -15,7 +15,6 @@
 #include <a.out.h>
 #include <minix/com.h>
 #include <minix/endpoint.h>
-#include <minix/u64.h>
 #include "proc.h"
 #include "debug.h"
 #include "clock.h"

@@ -18,7 +18,6 @@
 #include <unistd.h>
 #include <minix/callnr.h>
 #include <minix/com.h>
-#include <minix/u64.h>
 #include "file.h"
 #include "fproc.h"
 #include "scratchpad.h"

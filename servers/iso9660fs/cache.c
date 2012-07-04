@@ -13,7 +13,6 @@
 
 #include "inc.h"
 #include <minix/com.h>
-#include <minix/u64.h>
 #include <minix/bdev.h>
 #include "buf.h"
 

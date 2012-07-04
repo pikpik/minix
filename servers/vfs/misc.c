@@ -28,7 +28,6 @@
 #include <minix/endpoint.h>
 #include <minix/com.h>
 #include <minix/sysinfo.h>
-#include <minix/u64.h>
 #include <sys/ptrace.h>
 #include <sys/svrctl.h>
 #include "file.h"

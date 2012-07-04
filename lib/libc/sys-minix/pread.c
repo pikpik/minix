@@ -10,7 +10,6 @@ __weak_alias(pread, _pread)
 
 #include <lib.h>
 #include <unistd.h>
-#include <minix/u64.h>
 
 ssize_t pread64(int fd, void *buffer, size_t nbytes, u64_t where)
 {

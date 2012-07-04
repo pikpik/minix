@@ -26,7 +26,6 @@
 #include "mfsdir.h"
 #if (defined(__minix) && MACHINE == IBM_PC)
 #include <minix/partition.h>
-#include <minix/u64.h>
 #include <sys/ioctl.h>
 #endif
 #include <dirent.h>

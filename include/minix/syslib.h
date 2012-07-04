@@ -11,8 +11,6 @@
 #include <minix/ipc.h>
 #endif
 
-#include <minix/u64.h>
-
 #ifndef _DEVIO_H
 #include <minix/devio.h>
 #endif

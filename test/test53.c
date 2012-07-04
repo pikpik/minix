@@ -1,5 +1,4 @@
 #include <assert.h>
-#include <minix/u64.h>
 #include <setjmp.h>
 #include <signal.h>
 #include <stdio.h>

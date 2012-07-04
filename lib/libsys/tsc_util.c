@@ -3,7 +3,6 @@
 #include <time.h>
 #include <sys/times.h>
 #include <sys/types.h>
-#include <minix/u64.h>
 #include <minix/config.h>
 #include <minix/const.h>
 #include <minix/minlib.h>

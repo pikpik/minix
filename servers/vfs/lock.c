@@ -7,7 +7,6 @@
 
 #include "fs.h"
 #include <minix/com.h>
-#include <minix/u64.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include "file.h"

@@ -8,8 +8,6 @@
 __weak_alias(pwrite, _pwrite)
 #endif
 
-#include <minix/u64.h>
-
 ssize_t pwrite64(int fd, const void *buffer, size_t nbytes, u64_t where)
 {
 	u64_t here;

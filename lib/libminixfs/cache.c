@@ -3,7 +3,6 @@
 
 #include <minix/libminixfs.h>
 #include <minix/dmap.h>
-#include <minix/u64.h>
 #include <minix/sysutil.h>
 #include <sys/param.h>
 #include <errno.h>

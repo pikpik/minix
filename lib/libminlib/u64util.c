@@ -1,8 +1,6 @@
 /* Few u64 utils implemented in C
  * Author: Gautam BT
  */
-#include <minix/u64.h>
-
 u64_t rrotate64(u64_t x, unsigned short b)
 {
 	b %= 64;

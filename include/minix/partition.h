@@ -10,8 +10,6 @@
 #include <minix/types.h>
 #endif
 
-#include <minix/u64.h>
-
 int minix_sizeup(char *name, u64_t *bytes);
 
 struct partition {

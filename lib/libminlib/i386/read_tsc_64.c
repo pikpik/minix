@@ -1,5 +1,4 @@
 
-#include <minix/u64.h>
 #include <minix/minlib.h>
 
 /* Utility function to work directly with u64_t

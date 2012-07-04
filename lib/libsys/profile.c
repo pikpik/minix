@@ -17,7 +17,6 @@
 #include <string.h>
 #include <minix/profile.h>
 #include <minix/sysutil.h>
-#include <minix/u64.h>
 #include <minix/minlib.h>
 
 static char cpath[CPROF_CPATH_MAX_LEN];	/* current call path string */

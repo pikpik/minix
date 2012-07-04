@@ -1,5 +1,3 @@
-#include <minix/u64.h>
-
 #define AVL_UNIQUE(id) yielded_ ## id
 #define AVL_HANDLE yielded_t *
 #define AVL_KEY block_id_t

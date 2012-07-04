@@ -16,7 +16,6 @@
  */
 
 #include "fs.h"
-#include <minix/u64.h>
 #include <minix/bdev.h>
 #include <minix/libminixfs.h>
 #include <stdlib.h>
