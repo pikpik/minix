@@ -259,7 +259,7 @@ not_runnable_pick_new:
 	if (proc_is_preempted(p)) {
 		p->p_rts_flags &= ~RTS_PREEMPTED;
 		if (proc_is_runnable(p)) {
-			if (!(p->p_cpu_time_left == 0))
+			if (p->p_cpu_time_left != 0)
 				enqueue_head(p);
 			else
 				enqueue(p);
@@ -355,7 +355,7 @@ check_misc_flags:
 	 * as we are sure that a possible out-of-quantum message to the
 	 * scheduler will not collide with the regular ipc
 	 */
-	if ((p->p_cpu_time_left == 0))
+	if (p->p_cpu_time_left == 0)
 		proc_no_time(p);
 	/*
 	 * After handling the misc flags the selected process might not be
@@ -372,7 +372,7 @@ check_misc_flags:
 #endif
 
 	p = arch_finish_switch_to_user();
-	assert(!(p->p_cpu_time_left == 0));
+	assert(p->p_cpu_time_left != 0);
 
 	context_stop(proc_addr(KERNEL));
 
@@ -1592,7 +1592,7 @@ static void enqueue_head(struct proc *rp)
    * the process was runnable without its quantum expired when dequeued. A
    * process with no time left should vahe been handled else and differently
    */
-  assert(!(rp->p_cpu_time_left == 0));
+  assert(rp->p_cpu_time_left != 0);
 
   assert(q >= 0);
 
@@ -1675,7 +1675,7 @@ void dequeue(struct proc *rp)
   /* this is not all that accurate on virtual machines, especially with
      IO bound processes that only spend a short amount of time in the queue
      at a time. */
-  if (!(rp->p_accounting.enter_queue == 0)) {
+  if (rp->p_accounting.enter_queue != 0) {
 	read_tsc_64(&tsc);
 	tsc_delta = tsc - rp->p_accounting.enter_queue;
 	rp->p_accounting.time_in_queue = rp->p_accounting.time_in_queue
