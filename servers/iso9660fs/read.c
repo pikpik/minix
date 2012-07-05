@@ -49,7 +49,7 @@ int fs_read(void) {
 	if (chunk > bytes_left) chunk = (int) bytes_left;
       
 	/* Read or write 'chunk' bytes. */
-	r = read_chunk(dir, cvul64(position), off, chunk, (unsigned) nrbytes, 
+	r = read_chunk(dir, position, off, chunk, (unsigned) nrbytes, 
 		       gid, cum_io, block_size, &completed);
 
 	if (r != OK) break;	/* EOF reached */
@@ -116,7 +116,7 @@ int fs_bread(void)
     /* Update counters and pointers. */
     nrbytes -= chunk;	        /* bytes yet to be read */
     cum_io += chunk;	        /* bytes read so far */
-    position= add64ul(position, chunk);	/* position within the file */
+    position= position + chunk;	/* position within the file */
   }
   
   fs_m_out.RES_SEEK_POS_LO = ex64lo(position); 

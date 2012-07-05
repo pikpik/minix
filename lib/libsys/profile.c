@@ -192,11 +192,11 @@ void procexit (char *UNUSED(name))
   /* Calculate "small" difference. */
   spent = sub64(stop, cprof_stk[cprof_stk_top].start_2);
   cprof_stk[cprof_stk_top].slot->cycles =
-	add64(cprof_stk[cprof_stk_top].slot->cycles, 
-		sub64(spent, cprof_stk[cprof_stk_top].spent_deeper));
+	cprof_stk[cprof_stk_top].slot->cycles + 
+		sub64(spent, cprof_stk[cprof_stk_top].spent_deeper);
 
   /* Clear spent_deeper for call level we're leaving. */
-  cprof_stk[cprof_stk_top].spent_deeper = cvu64(0);
+  cprof_stk[cprof_stk_top].spent_deeper = 0;
 
   /* Adjust call path string and stack. */
   cpath_len = cprof_stk[cprof_stk_top].cpath_len;
@@ -220,7 +220,7 @@ void procexit (char *UNUSED(name))
   cprof_stk_top--;					/* decrease stack */
   if (cprof_stk_top >= 0)	    /* don't update non-existent level -1 */
 	cprof_stk[cprof_stk_top].spent_deeper =
-		add64(cprof_stk[cprof_stk_top].spent_deeper, spent);
+		cprof_stk[cprof_stk_top].spent_deeper + spent;
   cprof_locked = 0;
 }
 
@@ -241,9 +241,9 @@ static void cprof_init()
   for (i=0; i<CPROF_STACK_SIZE; i++) {
 	cprof_stk[i].cpath_len = 0;
 	cprof_stk[i].slot = 0;
-	cprof_stk[i].start_1 = cvu64(0);
-	cprof_stk[i].start_2 = cvu64(0);
-	cprof_stk[i].spent_deeper = cvu64(0);
+	cprof_stk[i].start_1 = 0;
+	cprof_stk[i].start_2 = 0;
+	cprof_stk[i].spent_deeper = 0;
   }
 }
 

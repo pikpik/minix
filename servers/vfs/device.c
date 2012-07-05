@@ -678,7 +678,7 @@ int do_ioctl()
 	if (S_ISBLK(vp->v_mode))
 		r = bdev_ioctl(dev, who_e, ioctlrequest, argx);
 	else
-		r = dev_io(VFS_DEV_IOCTL, dev, who_e, argx, cvu64(0),
+		r = dev_io(VFS_DEV_IOCTL, dev, who_e, argx, 0,
 			   ioctlrequest, f->filp_flags, suspend_reopen);
   }
 

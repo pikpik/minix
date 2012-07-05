@@ -500,7 +500,7 @@ static ssize_t f_transfer(
 	/* Which block on disk and how close to EOF? */
 	if (position >= dv_size) return(total);		/* At EOF */
 	if (position + nbytes > dv_size) nbytes = dv_size - position;
-	block = div64u(add64ul(f_dv->dv_base, position), SECTOR_SIZE);
+	block = div64u(f_dv->dv_base + position, SECTOR_SIZE);
 
 	if ((nbytes & SECTOR_MASK) != 0) return(EINVAL);
 
@@ -1334,7 +1334,7 @@ static int test_read(int density)
   position = (off_t) f_dp->test << SECTOR_SHIFT;
   iovec1.iov_addr = (vir_bytes) floppy_buf;
   iovec1.iov_size = SECTOR_SIZE;
-  result = f_transfer(device, FALSE /*do_write*/, cvul64(position), SELF,
+  result = f_transfer(device, FALSE /*do_write*/, position, SELF,
 	&iovec1, 1, BDEV_NOFLAGS);
 
   if (result != SECTOR_SIZE) return(EIO);

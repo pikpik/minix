@@ -953,7 +953,7 @@ int read_write(u64_t pos, char *bufa, char *bufb, size_t *sizep, int request)
 		 * report the driver for acting strangely!
 		 */
 		if (m1.BDEV_STATUS > (ssize_t) *sizep ||
-			cmp64(add64u(pos, m1.BDEV_STATUS), disk_size) < 0)
+			cmp64(pos + m1.BDEV_STATUS, disk_size) < 0)
 			return bad_driver(DRIVER_MAIN, BD_PROTO, EFAULT);
 
 		/* Return the actual size. */
@@ -975,7 +975,7 @@ int read_write(u64_t pos, char *bufa, char *bufb, size_t *sizep, int request)
 
 			/* As above */
 			if (m2.BDEV_STATUS > (ssize_t) *sizep ||
-					cmp64(add64u(pos, m2.BDEV_STATUS),
+					cmp64(pos + m2.BDEV_STATUS,
 					disk_size) < 0)
 				return bad_driver(DRIVER_BACKUP, BD_PROTO,
 					EFAULT);

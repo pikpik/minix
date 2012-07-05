@@ -202,7 +202,7 @@ static void amd_watchdog_init(const unsigned cpu)
 	ia32_msr_write(AMD_MSR_EVENT_SEL0, 0, val);
 
 	cpuf = cpu_get_freq(cpu);
-	neg64(cpuf);
+	cpuf = -cpuf;
 	watchdog->resetval = watchdog->watchdog_resetval = cpuf;
 
 	ia32_msr_write(AMD_MSR_EVENT_CTR0,
@@ -230,7 +230,7 @@ static int amd_watchdog_profile_init(const unsigned freq)
 	cpuf = cpu_get_freq(cpuid);
 	cpuf = div64u64(cpuf, freq);
 
-	neg64(cpuf);
+	cpuf = -cpuf;
 	watchdog->profile_resetval = cpuf;
 
 	return OK;

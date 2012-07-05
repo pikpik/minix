@@ -90,7 +90,7 @@ int read_vds(
   static char sbbuf[ISO9660_MIN_BLOCK_SIZE];
   int i = 0;
 
-  offset = cvul64(ISO9660_SUPER_BLOCK_POSITION);
+  offset = ISO9660_SUPER_BLOCK_POSITION;
   while (!vol_ok && i++<MAX_ATTEMPTS) {
 
     /* Read the sector of the super block. */
@@ -107,7 +107,7 @@ int read_vds(
       /* I dont need to save anything about it */
       vol_ok = TRUE;
 
-    offset = add64u(offset,ISO9660_MIN_BLOCK_SIZE);
+    offset = offset + ISO9660_MIN_BLOCK_SIZE;
   }
 
   if (vol_ok == FALSE)

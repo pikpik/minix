@@ -302,12 +302,12 @@ void geometry(void)
 		/* Use the same fake geometry as part. */
 		if (fstat(fd, &sb) < 0)
 			fatal(device);
-		geometry.base= cvul64(0);
-		geometry.size= cvul64(sb.st_size);
-		geometry.sectors= 32;
-		geometry.heads= 64;
-		geometry.cylinders= (sb.st_size-1)/SECTOR_SIZE/
-			(geometry.sectors*geometry.heads) + 1;
+		geometry.base      = 0;
+		geometry.size      = sb.st_size;
+		geometry.sectors   = 32;
+		geometry.heads     = 64;
+		geometry.cylinders = (sb.st_size - 1) / SECTOR_SIZE
+			/ (geometry.sectors*geometry.heads) + 1;
 	}
 	close(fd);
 	primary.lowsec= div64u(geometry.base, SECTOR_SIZE);

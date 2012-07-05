@@ -415,7 +415,7 @@ char *device;
   d = div64u(bytes, block_size);
   rem = rem64u(bytes, block_size);
 
-  resize = add64u(mul64u(d, block_size), rem);
+  resize = mul64u(d, block_size) + rem;
   if(cmp64(resize, bytes) != 0) {
 	d = ULONG_MAX;
 	fprintf(stderr, "mkfs: truncating FS at %u blocks\n", d);

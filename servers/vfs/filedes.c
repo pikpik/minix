@@ -121,15 +121,15 @@ int get_fd(int start, mode_t bits, int *k, struct filp **fpt)
   for (f = &filp[0]; f < &filp[NR_FILPS]; f++) {
 	assert(f->filp_count >= 0);
 	if (f->filp_count == 0 && mutex_trylock(&f->filp_lock) == 0) {
-		f->filp_mode = bits;
-		f->filp_pos = cvu64(0);
-		f->filp_selectors = 0;
-		f->filp_select_ops = 0;
-		f->filp_pipe_select_ops = 0;
-		f->filp_flags = 0;
-		f->filp_state = FS_NORMAL;
-		f->filp_select_flags = 0;
-		f->filp_softlock = NULL;
+		f->filp_mode		= bits;
+		f->filp_pos		= 0;
+		f->filp_selectors	= 0;
+		f->filp_select_ops	= 0;
+		f->filp_pipe_select_ops	= 0;
+		f->filp_flags		= 0;
+		f->filp_state		= FS_NORMAL;
+		f->filp_select_flags	= 0;
+		f->filp_softlock	= NULL;
 		*fpt = f;
 		return(OK);
 	}

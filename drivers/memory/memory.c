@@ -160,8 +160,8 @@ static int sef_cb_init_fresh(int UNUSED(type), sef_init_info_t *UNUSED(info))
   }
 
   /* Map in kernel memory for /dev/kmem. */
-  m_geom[KMEM_DEV].dv_base = cvul64(kinfo.kmem_base);
-  m_geom[KMEM_DEV].dv_size = cvul64(kinfo.kmem_size);
+  m_geom[KMEM_DEV].dv_base = kinfo.kmem_base;
+  m_geom[KMEM_DEV].dv_size = kinfo.kmem_size;
   if((m_vaddrs[KMEM_DEV] = vm_map_phys(SELF, (void *) kinfo.kmem_base,
 	kinfo.kmem_size)) == MAP_FAILED) {
 	printf("MEM: Couldn't map in /dev/kmem.");
@@ -169,8 +169,8 @@ static int sef_cb_init_fresh(int UNUSED(type), sef_init_info_t *UNUSED(info))
 #endif
 
   /* Ramdisk image built into the memory driver */
-  m_geom[IMGRD_DEV].dv_base= cvul64(0);
-  m_geom[IMGRD_DEV].dv_size= cvul64(imgrd_size);
+  m_geom[IMGRD_DEV].dv_base = 0;
+  m_geom[IMGRD_DEV].dv_size = imgrd_size;
   m_vaddrs[IMGRD_DEV] = (vir_bytes) imgrd;
 
   /* Initialize /dev/zero. Simply write zeros into the buffer. */
@@ -182,8 +182,8 @@ static int sef_cb_init_fresh(int UNUSED(type), sef_init_info_t *UNUSED(info))
 	openct[i] = 0;
 
   /* Set up memory range for /dev/mem. */
-  m_geom[MEM_DEV].dv_base = cvul64(0);
-  m_geom[MEM_DEV].dv_size = cvul64(0xffffffff);
+  m_geom[MEM_DEV].dv_base = 0;
+  m_geom[MEM_DEV].dv_size = 0xffffffff;
 
   m_vaddrs[MEM_DEV] = (vir_bytes) MAP_FAILED; /* we are not mapping this in. */
 
@@ -544,8 +544,8 @@ static int m_block_close(dev_t minor)
 		vlen -= vlen % PAGE_SIZE;
 	}
 	minix_munmap((void *) vaddr, vlen);
-	m_geom[IMGRD_DEV].dv_base= cvul64(0);
-	m_geom[IMGRD_DEV].dv_size= cvul64(0);
+	m_geom[IMGRD_DEV].dv_base = 0;
+	m_geom[IMGRD_DEV].dv_size = 0;
 	m_vaddrs[IMGRD_DEV] = 0;
   }
 #endif
@@ -585,7 +585,7 @@ static int m_block_ioctl(dev_t minor, unsigned int request, endpoint_t endpt,
 	sizeof(ramdev_size));
   if (s != OK)
 	return s;
-  if(m_vaddrs[minor] && !cmp64(dv->dv_size, cvul64(ramdev_size))) {
+  if(m_vaddrs[minor] && !cmp64(dv->dv_size, ramdev_size)) {
 	return(OK);
   }
   /* openct is 1 for the ioctl(). */
@@ -617,7 +617,7 @@ static int m_block_ioctl(dev_t minor, unsigned int request, endpoint_t endpt,
 
   m_vaddrs[minor] = (vir_bytes) mem;
 
-  dv->dv_size = cvul64(ramdev_size);
+  dv->dv_size = ramdev_size;
 
   return(OK);
 }

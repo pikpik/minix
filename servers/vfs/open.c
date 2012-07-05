@@ -634,14 +634,14 @@ int do_lseek()
 
   /* The value of 'whence' determines the start position to use. */
   switch(seekwhence) {
-    case SEEK_SET: pos = cvu64(0);	break;
+    case SEEK_SET: pos = 0;	break;
     case SEEK_CUR: pos = rfilp->filp_pos;	break;
-    case SEEK_END: pos = cvul64(rfilp->filp_vno->v_size);	break;
+    case SEEK_END: pos = rfilp->filp_vno->v_size;	break;
     default: unlock_filp(rfilp); return(EINVAL);
   }
 
   if (offset >= 0)
-	newpos = add64ul(pos, offset);
+	newpos = pos + offset;
   else
 	newpos = sub64ul(pos, -offset);
 
@@ -694,13 +694,13 @@ int do_llseek()
 
   /* The value of 'whence' determines the start position to use. */
   switch(seekwhence) {
-    case SEEK_SET: pos = cvu64(0);	break;
+    case SEEK_SET: pos = 0;	break;
     case SEEK_CUR: pos = rfilp->filp_pos;	break;
-    case SEEK_END: pos = cvul64(rfilp->filp_vno->v_size);	break;
+    case SEEK_END: pos = rfilp->filp_vno->v_size;	break;
     default: unlock_filp(rfilp); return(EINVAL);
   }
 
-  newpos = add64(pos, make64(off_lo, off_hi));
+  newpos = pos + make64(off_lo, off_hi);
 
   /* Check for overflow. */
   if ((off_hi > 0) && cmp64(newpos, pos) < 0)

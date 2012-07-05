@@ -92,10 +92,10 @@ int do_fork(struct proc * caller, message * m_ptr)
   RTS_SET(rpc, RTS_NO_QUANTUM);
   reset_proc_accounting(rpc);
 
-  make_zero64(rpc->p_cpu_time_left);
-  make_zero64(rpc->p_cycles);
-  make_zero64(rpc->p_kcall_cycles);
-  make_zero64(rpc->p_kipc_cycles);
+  rpc->p_cpu_time_left	= 0;
+  rpc->p_cycles		= 0;
+  rpc->p_kcall_cycles	= 0;
+  rpc->p_kipc_cycles	= 0;
 
   /* If the parent is a privileged process, take away the privileges from the 
    * child process and inhibit it from running by setting the NO_PRIV flag.

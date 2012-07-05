@@ -88,7 +88,7 @@ int fs_readwrite(void)
 	}
 
 	/* Read or write 'chunk' bytes. */
-	r = rw_chunk(rip, cvul64((unsigned long) position), off, chunk,
+	r = rw_chunk(rip, (unsigned long) position, off, chunk,
 		     nrbytes, rw_flag, gid, cum_io, block_size, &completed);
 
 	if (r != OK) break;   /* EOF reached */
@@ -182,7 +182,7 @@ int fs_breadwrite(void)
 	  /* Update counters and pointers. */
 	  nrbytes -= chunk;	        /* bytes yet to be read */
 	  cum_io += chunk;	        /* bytes read so far */
-	  position = add64ul(position, chunk);	/* position within the file */
+	  position = position + chunk;	/* position within the file */
   }
 
   fs_m_out.RES_SEEK_POS_LO = ex64lo(position);
@@ -402,7 +402,7 @@ void read_ahead()
 
   assert(rdahedpos > 0); /* So we can safely cast it to unsigned below */
 
-  bp = rahead(rip, b, cvul64((unsigned long) rdahedpos), block_size);
+  bp = rahead(rip, b, (unsigned long) rdahedpos, block_size);
   put_block(bp, PARTIAL_DATA_BLOCK);
 }
 

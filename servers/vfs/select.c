@@ -371,7 +371,7 @@ static int select_request_async(struct filp *f, int *ops, int block)
 
   f->filp_select_flags &= ~FSF_UPDATE;
   r = dev_io(VFS_DEV_SELECT, f->filp_vno->v_sdev, rops, NULL,
-	     cvu64(0), 0, 0, FALSE);
+	     0, 0, 0, FALSE);
   if (r < 0 && r != SUSPEND)
 	return(r);
 
@@ -423,7 +423,7 @@ static int select_request_sync(struct filp *f, int *ops, int block)
   rops = *ops;
   if (block) rops |= SEL_NOTIFY;
   *ops = dev_io(VFS_DEV_SELECT, f->filp_vno->v_sdev, rops, NULL,
-		cvu64(0), 0, 0, FALSE);
+		0, 0, 0, FALSE);
   if (*ops < 0)
 	return(*ops);
 

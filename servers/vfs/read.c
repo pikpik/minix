@@ -141,7 +141,7 @@ int read_write(int rw_flag, struct filp *f, char *buf, size_t size,
 		   suspend_reopen);
 	if (r >= 0) {
 		cum_io = r;
-		position = add64ul(position, r);
+		position = position + r;
 		r = OK;
 	}
   } else if (S_ISBLK(vp->v_mode)) {	/* Block special files. */
@@ -161,7 +161,7 @@ int read_write(int rw_flag, struct filp *f, char *buf, size_t size,
   } else {				/* Regular files */
 	if (rw_flag == WRITING) {
 		/* Check for O_APPEND flag. */
-		if (oflags & O_APPEND) position = cvul64(vp->v_size);
+		if (oflags & O_APPEND) position = vp->v_size;
 	}
 
 	/* Issue request */
@@ -255,8 +255,7 @@ size_t req_size;
 
   oflags = f->filp_flags;
   vp = f->filp_vno;
-  position = cvu64((rw_flag == READING) ? vp->v_pipe_rd_pos :
-							vp->v_pipe_wr_pos);
+  position = (rw_flag == READING) ? vp->v_pipe_rd_pos : vp->v_pipe_wr_pos;
   /* fp->fp_cum_io_partial is only nonzero when doing partial writes */
   cum_io = fp->fp_cum_io_partial;
 
@@ -271,7 +270,7 @@ size_t req_size;
 
   /* Truncate read request at size. */
   if((rw_flag == READING) &&
-	cmp64ul(add64ul(position, size), vp->v_size) > 0) {
+	cmp64ul(position + size, vp->v_size) > 0) {
 	/* Position always should fit in an off_t (LONG_MAX). */
 	off_t pos32;
 
@@ -312,7 +311,7 @@ size_t req_size;
 		vp->v_size = 0;
 		vp->v_pipe_rd_pos= 0;
 		vp->v_pipe_wr_pos= 0;
-		position = cvu64(0);
+		position = 0;
 	}
   }
 

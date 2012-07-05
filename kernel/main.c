@@ -140,7 +140,7 @@ int main(void)
 	DEBUGEXTRA(("initializing %s... ", ip->proc_name));
 	rp = proc_addr(ip->proc_nr);		/* get process pointer */
 	ip->endpoint = rp->p_endpoint;		/* ipc endpoint */
-	make_zero64(rp->p_cpu_time_left);
+	rp->p_cpu_time_left = 0;
 	strncpy(rp->p_name, ip->proc_name, P_NAME_LEN); /* set process name */
 	
 	reset_proc_accounting(rp);

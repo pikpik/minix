@@ -398,10 +398,10 @@ u64_t cputicks(struct proc *p1, struct proc *p2, int timemode)
 		if(!CPUTIME(timemode, i)) 
 			continue;
 		if(p1->p_endpoint == p2->p_endpoint) {
-			t = add64(t, sub64(p2->p_cpucycles[i],
-				p1->p_cpucycles[i]));
+			t = t + sub64(p2->p_cpucycles[i],
+				p1->p_cpucycles[i]);
 		} else {
-			t = add64(t, p2->p_cpucycles[i]);
+			t = t + p2->p_cpucycles[i];
 		}
 	}
 
@@ -412,11 +412,11 @@ void print_procs(int maxlines,
 	struct proc *proc1, struct proc *proc2, int cputimemode)
 {
 	int p, nprocs;
-	u64_t idleticks = cvu64(0);
-	u64_t kernelticks = cvu64(0);
-	u64_t systemticks = cvu64(0);
-	u64_t userticks = cvu64(0);
-	u64_t total_ticks = cvu64(0);
+	u64_t idleticks   = 0;
+	u64_t kernelticks = 0;
+	u64_t systemticks = 0;
+	u64_t userticks	  = 0;
+	u64_t total_ticks = 0;
 	unsigned long tcyc;
 	unsigned long tmp;
 	int blockedseen = 0;
@@ -438,7 +438,7 @@ void print_procs(int maxlines,
 		tick_procs[nprocs].p = proc2 + p;
 		tick_procs[nprocs].ticks = cputicks(&proc1[p], &proc2[p], cputimemode);
 		uticks = cputicks(&proc1[p], &proc2[p], 1);
-		total_ticks = add64(total_ticks, uticks);
+		total_ticks = total_ticks + uticks;
 		if(p-NR_TASKS == IDLE) {
 			idleticks = uticks;
 			continue;
@@ -449,11 +449,11 @@ void print_procs(int maxlines,
 		}
 		if(!(proc2[p].p_flags & IS_TASK)) {
 			if(proc2[p].p_flags & IS_SYSTEM)
-				systemticks = add64(systemticks,
-					tick_procs[nprocs].ticks);
+				systemticks = systemticks +
+					tick_procs[nprocs].ticks;
 			else
-				userticks = add64(userticks,
-					tick_procs[nprocs].ticks);
+				userticks = userticks +
+					tick_procs[nprocs].ticks;
 		}
 
 		nprocs++;
