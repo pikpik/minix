@@ -135,8 +135,8 @@ static int bdev_rdwt_setup(int req, dev_t dev, u64_t pos, char *buf,
   memset(m, 0, sizeof(*m));
   m->m_type = req;
   m->BDEV_MINOR = minor(dev);
-  m->BDEV_POS_LO = ex64lo(pos);
-  m->BDEV_POS_HI = ex64hi(pos);
+  m->BDEV_POS_LO = (unsigned long)pos;
+  m->BDEV_POS_HI = (unsigned long)(pos>>32);
   m->BDEV_COUNT = count;
   m->BDEV_GRANT = grant;
   m->BDEV_FLAGS = flags;
@@ -226,8 +226,8 @@ static int bdev_vrdwt_setup(int req, dev_t dev, u64_t pos, iovec_t *vec,
   memset(m, 0, sizeof(*m));
   m->m_type = req;
   m->BDEV_MINOR = minor(dev);
-  m->BDEV_POS_LO = ex64lo(pos);
-  m->BDEV_POS_HI = ex64hi(pos);
+  m->BDEV_POS_LO = (unsigned long)pos;
+  m->BDEV_POS_HI = (unsigned long)(pos>>32);
   m->BDEV_COUNT = count;
   m->BDEV_GRANT = grant;
   m->BDEV_FLAGS = flags;

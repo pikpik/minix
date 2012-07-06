@@ -366,7 +366,7 @@ void print_proc(struct tp *tp, u32_t tcyc)
 	ticks = pr->p_user_time;
 	printf(" %3u:%02u ", (ticks/system_hz/60), (ticks/system_hz)%60);
 
-	pcyc = div64u(tp->ticks, SCALE);
+	pcyc = (unsigned long)(tp->ticks / SCALE);
 
 	printf("%6.2f%% %s", 100.0*pcyc/tcyc, name);
 }
@@ -464,18 +464,18 @@ void print_procs(int maxlines,
 
 	qsort(tick_procs, nprocs, sizeof(tick_procs[0]), cmp_ticks);
 
-	tcyc = div64u(total_ticks, SCALE);
+	tcyc = (unsigned long)(total_ticks / SCALE);
 
-	tmp = div64u(userticks, SCALE);
+	tmp = (unsigned long)(userticks / SCALE);
 	printf("CPU states: %6.2f%% user, ", 100.0*(tmp)/tcyc);
 
-	tmp = div64u(systemticks, SCALE);
+	tmp = (unsigned long)(systemticks / SCALE);
 	printf("%6.2f%% system, ", 100.0*tmp/tcyc);
 
-	tmp = div64u(kernelticks, SCALE);
+	tmp = (unsigned long)(kernelticks / SCALE);
 	printf("%6.2f%% kernel, ", 100.0*tmp/tcyc);
 
-	tmp = div64u(idleticks, SCALE);
+	tmp = (unsigned long)(idleticks / SCALE);
 	printf("%6.2f%% idle", 100.0*tmp/tcyc);
 
 #define NEWLINE do { printf("\n"); if(--maxlines <= 0) { return; } } while(0) 

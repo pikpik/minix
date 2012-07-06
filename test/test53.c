@@ -21,9 +21,9 @@ static void err(int line)
 	/* print error information */
 	printf("error line %d; i=0x%.8lx%.8lx; j=0x%.8lx%.8lx; k=0x%.8lx%.8lx\n", 
 		line, 
-		ex64hi(i), ex64lo(i), 
-		ex64hi(j), ex64lo(j),
-		ex64hi(k), ex64lo(k));
+		(unsigned long)(i>>32), (unsigned long)i, 
+		(unsigned long)(j>>32), (unsigned long)j,
+		(unsigned long)(k>>32), (unsigned long)k);
 
 	/* quit after too many errors */
 	if (errct++ > MAX_ERROR) {
@@ -114,7 +114,7 @@ static void handler_SIGFPE(int signum)
 static void testmul(void)
 {
 	int kdone, kidx;
-	u32_t ilo = ex64lo(i), jlo = ex64lo(j);
+	u32_t ilo = (unsigned long)i, jlo = (unsigned long)j;
 	u64_t prod = mul64(i, j);
 	int prodbits;
 		
@@ -124,7 +124,8 @@ static void testmul(void)
 	if (bsr64(prod) > prodbits) ERR;
 
 	/* compare to 32-bit multiplication if possible */	
-	if (ex64hi(i) == 0 && ex64hi(j) == 0) {
+	if ((unsigned long)(i>>32) == 0 &&
+	    (unsigned long)(j>>32) == 0) {
 		if (cmp64(prod, mul64u(ilo, jlo)) != 0) ERR;
 		
 		/* if there is no overflow we can check against pure 32-bit */
@@ -132,7 +133,7 @@ static void testmul(void)
 	}
 
 	/* in 32-bit arith low-order DWORD matches regardless of overflow */
-	if (ex64lo(prod) != ilo * jlo) ERR;
+	if ((unsigned long)prod != ilo * jlo) ERR;
 
 	/* multiplication by zero yields zero */
 	if (prodbits < 0 && cmp64u(prod, 0) != 0) ERR;
@@ -166,11 +167,11 @@ static void testdiv0(void)
 		if (setjmp(jmpbuf_SIGFPE) == 0) {
 			/* divide by zero using various functions */
 			switch (funcidx) {
-				case 0: div64(i, j);		ERR; break;
-				case 1: div64u64(i, ex64lo(j));	ERR; break;
-				case 2: div64u(i, ex64lo(j));	ERR; break;
-				case 3: rem64(i, j);		ERR; break;
-				case 4: rem64u(i, ex64lo(j));	ERR; break;
+				case 0: i / j;			ERR; break;
+				case 1: i / (unsigned long)j;	ERR; break;
+				case 2: (unsigned long)(i / (unsigned long)j);	ERR; break;
+				case 3: i & j;			ERR; break;
+				case 4: (unsigned)(i % (unsigned long)j);	ERR; break;
 				default: assert(0);		ERR; break;
 			}
 
@@ -194,8 +195,8 @@ static void testdiv(void)
 	struct timeval tvstart, tvend;
 
 	printf("i=0x%.8x%.8x; j=0x%.8x%.8x\n", 
-		ex64hi(i), ex64lo(i), 
-		ex64hi(j), ex64lo(j));
+		(unsigned long)(i>>32), (unsigned long)i, 
+		(unsigned long)(j>>32), (unsigned long)j);
 	fflush(stdout);
 	if (gettimeofday(&tvstart, NULL) < 0) ERR;
 #endif
@@ -207,8 +208,8 @@ static void testdiv(void)
 	}
 
 	/* perform division, store q in k to make ERR more informative */
-	q = div64(i, j);
-	r = rem64(i, j);
+	q = i / j;
+	r = i % j;
 	k = q;
 
 #if TIMED
@@ -220,24 +221,31 @@ static void testdiv(void)
 		tvend.tv_usec += 1000000;
 	}
 	printf("q=0x%.8x%.8x; r=0x%.8x%.8x; time=%d.%.6d\n", 
-		ex64hi(q), ex64lo(q), 
-		ex64hi(r), ex64lo(r), 
+		(unsigned long)(q>>32), (unsigned long)q, 
+		(unsigned long)(r>>32), (unsigned long)r,
 		tvend.tv_sec, tvend.tv_usec);
 	fflush(stdout);
 #endif
 
 	/* compare to 64/32-bit division if possible */
-	if (!ex64hi(j)) {
-		if (cmp64(q, div64u64(i, ex64lo(j))) != 0) ERR;
-		if (!ex64hi(q)) {
-			if (cmp64u(q, div64u(i, ex64lo(j))) != 0) ERR;
+	if (!(unsigned long)(j>>32)) {
+		if (cmp64(q, i / (unsigned long)j) != 0) ERR;
+		if (!(unsigned long)(q>>32)) {
+			if (cmp64u(q,
+			    (unsigned long)(i / (unsigned long)j)) != 0)
+				ERR;
 		}
-		if (cmp64u(r, rem64u(i, ex64lo(j))) != 0) ERR;
+		if (cmp64u(r, (unsigned)(i % (unsigned long)j)) != 0)
+			ERR;
 
 		/* compare to 32-bit division if possible */
-		if (!ex64hi(i)) {
-			if (cmp64u(q, ex64lo(i) / ex64lo(j)) != 0) ERR;
-			if (cmp64u(r, ex64lo(i) % ex64lo(j)) != 0) ERR;
+		if (!(unsigned long)(i>>32)) {
+			if (cmp64u(q,
+			    (unsigned long)i / (unsigned long)j) != 0)
+				ERR;
+			if (cmp64u(r,
+			    (unsigned long)i % (unsigned long)j) != 0)
+				ERR;
 		}
 	}
 

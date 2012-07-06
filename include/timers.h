@@ -63,11 +63,14 @@ clock_t tmrs_settimer(timer_t **tmrs, timer_t *tp, clock_t exp_time,
 	tmr_func_t watchdog, clock_t *new_head);
 
 #define PRINT_STATS(cum_spenttime, cum_instances) {		\
-		if(ex64hi(cum_spenttime)) { util_stacktrace(); printf(" ( ??? %lu %lu)\n",	\
-			ex64hi(cum_spenttime), ex64lo(cum_spenttime)); } \
-		printf("%s:%d,%lu,%lu\n", \
+		if((unsigned long)(cum_spenttime>>32)) {	\
+			util_stacktrace();			\
+			printf(" ( ??? %lu %lu)\n",		\
+			(unsigned long)(cum_spenttime>>32),	\
+			(unsigned long)cum_spenttime); }	\
+		printf("%s:%d,%lu,%lu\n",			\
 			__FILE__, __LINE__, cum_instances,	\
-			 ex64lo(cum_spenttime)); \
+			 (unsigned long)cum_spenttime);		\
 	}
 
 #define RESET_STATS(starttime, cum_instances, cum_spenttime, cum_starttime) { \
@@ -89,7 +92,7 @@ clock_t tmrs_settimer(timer_t **tmrs, timer_t *tp, clock_t exp_time,
 		RESET_STATS(_starttime, _cum_instances, _cum_spenttime, _cum_starttime); \
 	 }							\
 	_next_cum_spent = _cum_spenttime + _dt;			\
-	if(ex64hi(_next_cum_spent)) { 				\
+	if((unsigned long)(_next_cum_spent>>32)) { 		\
 		PRINT_STATS(_cum_spenttime, _cum_instances);	\
 		RESET_STATS(_starttime, _cum_instances, _cum_spenttime, _cum_starttime); \
 	} 							\

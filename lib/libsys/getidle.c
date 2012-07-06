@@ -33,11 +33,11 @@ static double make_double(u64_t d)
   double value;
   size_t i;
 
-  value = (double) ex64hi(d);
+  value = (double) (unsigned long)(d>>32);
   for (i = 0; i < sizeof(unsigned long); i += 2)
 	value *= 65536.0;
 
-  value += (double) ex64lo(d);
+  value += (double) (unsigned long)d;
 
   return value;
 }

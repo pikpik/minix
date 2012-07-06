@@ -106,8 +106,8 @@ int do_write()
   if ((r = write_file(ino, &pos, &count, &grant)) != OK)
 	return r;
 
-  m_out.RES_SEEK_POS_HI = ex64hi(pos);
-  m_out.RES_SEEK_POS_LO = ex64lo(pos);
+  m_out.RES_SEEK_POS_HI = (unsigned long)(pos>>32);
+  m_out.RES_SEEK_POS_LO = (unsigned long)pos;
   m_out.RES_NBYTES = count;
 
   return OK;
@@ -153,7 +153,7 @@ int do_ftrunc()
 
 	delta = sub64(end, start);
 
-	if (ex64hi(delta) != 0) return EINVAL;
+	if ((unsigned long)(delta>>32) != 0) return EINVAL;
 
 	count = ex64lo(delta);
 

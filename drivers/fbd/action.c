@@ -58,9 +58,9 @@ static size_t get_range(struct fbd_rule *rule, u64_t pos, size_t *size,
 
 		delta = sub64(rule->start, pos);
 
-		assert(ex64hi(delta) == 0);
+		assert((unsigned long)(delta>>32) == 0);
 
-		off = ex64lo(delta);
+		off = (unsigned long)delta;
 	}
 
 	if (!to_eof) {
@@ -69,7 +69,7 @@ static size_t get_range(struct fbd_rule *rule, u64_t pos, size_t *size,
 		delta = sub64(rule->end, pos);
 
 		if (cmp64u(delta, *size) < 0)
-			*size = ex64lo(delta);
+			*size = (unsigned long)delta;
 	}
 
 	assert(*size > off);
@@ -121,11 +121,11 @@ static void action_io_corrupt(struct fbd_rule *rule, char *buf, size_t size,
 		/* Non-dword-aligned positions and sizes are not supported;
 		 * not by us, and not by the driver.
 		 */
-		if (ex64lo(pos) & (sizeof(val) - 1)) break;
+		if ((unsigned long)pos & (sizeof(val) - 1)) break;
 		if (size & (sizeof(val) - 1)) break;
 
 		/* Consistently produce the same pattern for the same range. */
-		val = ex64lo(skip);
+		val = (unsigned long)skip;
 
 		for ( ; size >= sizeof(val); size -= sizeof(val)) {
 			*((u32_t *) buf) = val ^ 0xdeadbeefUL;
@@ -186,8 +186,9 @@ static void action_pre_misdir(struct fbd_rule *rule, iovec_t *UNUSED(iov),
 	 * here, because we have no idea about the actual disk size, and the
 	 * resulting address must of course be valid..
 	 */
-	range = div64u(sub64(rule->params.misdir.end,
-		rule->params.misdir.start) + 1, rule->params.misdir.align);
+	range = (unsigned long)(sub64(rule->params.misdir.end,
+		rule->params.misdir.start) + 1
+		/ rule->params.misdir.align);
 
 	if (range > 0)
 		choice = get_rand(range - 1);

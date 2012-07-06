@@ -169,7 +169,7 @@ int read_write(int rw_flag, struct filp *f, char *buf, size_t size,
 			  buf, size, &new_pos, &cum_io_incr);
 
 	if (r >= 0) {
-		if (ex64hi(new_pos))
+		if ((unsigned long)(new_pos>>32))
 			panic("read_write: bad new pos");
 
 		position = new_pos;
@@ -181,10 +181,10 @@ int read_write(int rw_flag, struct filp *f, char *buf, size_t size,
   if (rw_flag == WRITING) {
 	if (S_ISREG(vp->v_mode) || S_ISDIR(vp->v_mode)) {
 		if (cmp64ul(position, vp->v_size) > 0) {
-			if (ex64hi(position) != 0) {
+			if ((unsigned long)(position>>32) != 0) {
 				panic("read_write: file size too big ");
 			}
-			vp->v_size = ex64lo(position);
+			vp->v_size = (unsigned long)position;
 		}
 	}
   }
@@ -219,7 +219,7 @@ int do_getdents()
 	r = EBADF;
 
   if (r == OK) {
-	if (ex64hi(rfilp->filp_pos) != 0)
+	if ((unsigned long)(rfilp->filp_pos>>32) != 0)
 		panic("do_getdents: can't handle large offsets");
 
 	r = req_getdents(rfilp->filp_vno->v_fs_e, rfilp->filp_vno->v_inode_nr,
@@ -288,7 +288,7 @@ size_t req_size;
 		    buf, size, &new_pos, &cum_io_incr);
 
   if (r >= 0) {
-	if (ex64hi(new_pos))
+	if ((unsigned long)(new_pos>>32))
 		panic("rw_pipe: bad new pos");
 
 	position = new_pos;
@@ -300,10 +300,10 @@ size_t req_size;
   /* On write, update file size and access time. */
   if (rw_flag == WRITING) {
 	if (cmp64ul(position, vp->v_size) > 0) {
-		if (ex64hi(position) != 0) {
+		if ((unsigned long)(position>>32) != 0) {
 			panic("read_write: file size too big for v_size");
 		}
-		vp->v_size = ex64lo(position);
+		vp->v_size = (unsigned long)position;
 	}
   } else {
 	if (cmp64ul(position, vp->v_size) >= 0) {

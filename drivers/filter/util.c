@@ -46,7 +46,7 @@ char *print64(u64_t p)
 #define NB 10
 	static int n = 0;
 	static char buf[NB][100];
-	u32_t lo = ex64lo(p), hi = ex64hi(p);
+	u32_t lo = (unsigned long)p, hi = (unsigned long)(p>>32);
 	n = (n+1) % NB;
 	if(!hi) sprintf(buf[n], "%x", lo);
 	else sprintf(buf[n], "%x%08x", hi, lo);

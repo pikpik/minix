@@ -1191,7 +1191,7 @@ static ssize_t w_transfer(
 #endif
 
   /* Check disk address. */
-  if (rem64u(position, SECTOR_SIZE) != 0) return(EINVAL);
+  if ((unsigned)(position % SECTOR_SIZE) != 0) return(EINVAL);
 
   errors = 0;
 
@@ -1204,8 +1204,8 @@ static ssize_t w_transfer(
 	/* Which block on disk and how close to EOF? */
 	if (cmp64(position, dv_size) >= 0) return(total);	/* At EOF */
 	if (cmp64(position + nbytes, dv_size) > 0)
-		nbytes = diff64(dv_size, position);
-	block = div64u(w_dv->dv_base + position, SECTOR_SIZE);
+		nbytes = (unsigned) (dv_size - position);
+	block = (unsigned long)(w_dv->dv_base + position / SECTOR_SIZE);
 
 	do_dma= wn->dma;
 	
@@ -1878,7 +1878,8 @@ static void w_geometry(dev_t minor, struct partition *entry)
   wn = w_wn;
 
   if (wn->state & ATAPI) {		/* Make up some numbers. */
-	entry->cylinders = div64u(wn->part[0].dv_size, SECTOR_SIZE) / (64*32);
+	entry->cylinders = (unsigned long)(wn->part[0].dv_size
+				/ SECTOR_SIZE) / (64*32);
 	entry->heads = 64;
 	entry->sectors = 32;
   } else {				/* Return logical geometry. */
@@ -1973,8 +1974,8 @@ static int atapi_transfer(
 	 * may have to read extra before or after the good data.
 	 */
 	pos = w_dv->dv_base + position;
-	block = div64u(pos, CD_SECTOR_SIZE);
-	before = rem64u(pos, CD_SECTOR_SIZE);
+	block = (unsigned long)(pos / CD_SECTOR_SIZE);
+	before = (unsigned)(pos % CD_SECTOR_SIZE);
 
 	if(before)
 		do_dma = 0;
@@ -1993,7 +1994,7 @@ static int atapi_transfer(
 	/* Which block on disk and how close to EOF? */
 	if (cmp64(position, dv_size) >= 0) return(total);	/* At EOF */
 	if (cmp64(position + nbytes, dv_size) > 0)
-		nbytes = diff64(dv_size, position);
+		nbytes = (unsigned) (dv_size - position);
 
 	nblocks = (before + nbytes + CD_SECTOR_SIZE - 1) / CD_SECTOR_SIZE;
 

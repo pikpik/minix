@@ -20,8 +20,8 @@ int vm_forgetblock(u64_t id)
 {
 	message m;
 
-	m.VMFB_IDHI = ex64hi(id);
-	m.VMFB_IDLO = ex64lo(id);
+	m.VMFB_IDHI = (unsigned long)(id>>32);
+	m.VMFB_IDLO = (unsigned long)id;
 
 	return _taskcall(VM_PROC_NR, VM_FORGETBLOCK, &m);
 }
@@ -35,11 +35,11 @@ int vm_yield_block_get_block(u64_t yieldid, u64_t getid,
 	message m;
 
 	m.VMYBGB_VADDR = mem;
-	m.VMYBGB_GETIDHI = ex64hi(getid);
-	m.VMYBGB_GETIDLO = ex64lo(getid);
+	m.VMYBGB_GETIDHI = (unsigned long)(getid>>32);
+	m.VMYBGB_GETIDLO = (unsigned long)getid;
 	m.VMYBGB_LEN = len;
-	m.VMYBGB_YIELDIDHI = ex64hi(yieldid);
-	m.VMYBGB_YIELDIDLO = ex64lo(yieldid);
+	m.VMYBGB_YIELDIDHI = (unsigned long)(yieldid>>32);
+	m.VMYBGB_YIELDIDLO = (unsigned long)yieldid;
 
 	return _taskcall(VM_PROC_NR, VM_YIELDBLOCKGETBLOCK, &m);
 }

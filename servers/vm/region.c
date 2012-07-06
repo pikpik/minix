@@ -2507,7 +2507,10 @@ static int getblock(struct vmproc *vmp, u64_t id,
 	/* Check the size as a sanity check. */
 	if(yb->len != len) {
 		printf("VM: id 0x%lx%08lx mismatched size (%lu, %lu) for %d\n",
-			ex64hi(id), ex64lo(id), yb->len, len, vmp->vm_endpoint);
+			(unsigned long)(id>>32),
+			(unsigned long)id,
+			yb->len, len,
+			vmp->vm_endpoint);
 		return ESRCH;
 	}
 

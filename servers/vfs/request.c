@@ -52,8 +52,8 @@ int req_breadwrite(
   m.m_type = rw_flag == READING ? REQ_BREAD : REQ_BWRITE;
   m.REQ_DEV2 = dev;
   m.REQ_GRANT = grant_id;
-  m.REQ_SEEK_POS_LO = ex64lo(pos);
-  m.REQ_SEEK_POS_HI = ex64hi(pos);
+  m.REQ_SEEK_POS_LO = (unsigned long)pos;
+  m.REQ_SEEK_POS_HI = (unsigned long)(pos>>32);
   m.REQ_NBYTES = num_of_bytes;
 
   /* Send/rec request */
@@ -301,7 +301,7 @@ int req_getdents(
   m.REQ_INODE_NR = inode_nr;
   m.REQ_GRANT = grant_id;
   m.REQ_MEM_SIZE = size;
-  m.REQ_SEEK_POS_LO = ex64lo(pos);
+  m.REQ_SEEK_POS_LO = (unsigned long)pos;
   m.REQ_SEEK_POS_HI = 0;	/* Not used for now, so clear it. */
 
   r = fs_sendrec(fs_e, &m);
@@ -764,7 +764,7 @@ unsigned int *cum_iop;
   cp_grant_id_t grant_id;
   message m;
 
-  if (ex64hi(pos) != 0)
+  if ((unsigned long)(pos>>32) != 0)
 	  panic("req_readwrite: pos too large");
 
   grant_id = cpf_grant_magic(fs_e, user_e, (vir_bytes) user_addr, num_of_bytes,
@@ -776,7 +776,7 @@ unsigned int *cum_iop;
   m.m_type = rw_flag == READING ? REQ_READ : REQ_WRITE;
   m.REQ_INODE_NR = inode_nr;
   m.REQ_GRANT = grant_id;
-  m.REQ_SEEK_POS_LO = ex64lo(pos);
+  m.REQ_SEEK_POS_LO = (unsigned long)pos;
   m.REQ_SEEK_POS_HI = 0;	/* Not used for now, so clear it. */
   m.REQ_NBYTES = num_of_bytes;
 

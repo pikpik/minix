@@ -101,7 +101,7 @@ int fs_bread(void)
   cum_io = 0;
   /* Split the transfer into chunks that don't span two blocks. */
   while (nrbytes != 0) {
-    off = rem64u(position, block_size);	/* offset in blk*/
+    off = (unsigned)(position % block_size);	/* offset in blk */
     
     chunk = MIN(nrbytes, block_size - off);
     if (chunk < 0) chunk = block_size - off;
@@ -119,8 +119,8 @@ int fs_bread(void)
     position= position + chunk;	/* position within the file */
   }
   
-  fs_m_out.RES_SEEK_POS_LO = ex64lo(position); 
-  fs_m_out.RES_SEEK_POS_HI = ex64hi(position); 
+  fs_m_out.RES_SEEK_POS_LO = (unsigned long)position; 
+  fs_m_out.RES_SEEK_POS_HI = (unsigned long)(position>>32); 
   
   if (rdwt_err != OK) r = rdwt_err;	/* check for disk error */
   if (rdwt_err == END_OF_FILE) r = OK;
@@ -299,23 +299,25 @@ int *completed;			/* number of bytes copied */
 
   *completed = 0;
 
-  if ((ex64lo(position) <= dir->d_file_size) && 
-  				(ex64lo(position) > dir->data_length_l)) {
-    while ((dir->d_next != NULL) && (ex64lo(position) > dir->data_length_l)) {
+  if (((unsigned long)position <= dir->d_file_size) &&
+      ((unsigned long)position > dir->data_length_l)) {
+    while ((dir->d_next != NULL) &&
+           ((unsigned long)position > dir->data_length_l)) {
       position = sub64ul(position, dir->data_length_l);
       dir = dir->d_next;
     }
   }
 
   if (dir->inter_gap_size != 0) {
-    rel_block = div64u(position, block_size);
+    rel_block = (unsigned long)(position / block_size);
     file_unit = rel_block / dir->data_length_l;
     offset = rel_block % dir->file_unit_size;
     b = dir->loc_extent_l + (dir->file_unit_size +
     				 dir->inter_gap_size) * file_unit + offset;
   } else {
-    b = dir->loc_extent_l + div64u(position, block_size); /* Physical position
-							    * to read. */
+    b = dir->loc_extent_l + (unsigned long)(position
+	/ block_size);				/* Physical position
+						 * to read. */
   }
 
   bp = get_block(b);

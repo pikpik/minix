@@ -248,8 +248,8 @@ int main(int argc, char **argv)
 	if (diocntl(hdst.st_rdev, DGETP, &whole) < 0) fatal(dev_file);
 
 	/* Use sector numbers. */
-	base = div64u(whole.base, SECTOR_SIZE);
-	size = div64u(whole.size, SECTOR_SIZE);
+	base = (unsigned long)(whole.base / SECTOR_SIZE);
+	size = (unsigned long)(whole.size / SECTOR_SIZE);
 	limit = base + size;
 
 	show_part(dev_file, base, size);

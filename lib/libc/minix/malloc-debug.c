@@ -134,7 +134,8 @@ static struct block *block_alloc(size_t size)
 #endif
 	totalsize = block_get_totalsize(size);
 	page_index_max = (ptr_max - ptr_min - totalsize) / PAGE_SIZE;
-	page_index = (page_index_max > 0) ? (ex64lo(tsc) % page_index_max) : 0;
+	page_index = (page_index_max > 0) ?
+			((unsigned long)tsc % page_index_max) : 0;
 	ptr = ptr_min + page_index * PAGE_SIZE;
 	
 	/* allocate block */

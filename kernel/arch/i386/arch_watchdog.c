@@ -36,12 +36,13 @@ static void intel_arch_watchdog_init(const unsigned cpu)
 	 * lowest 31 bits writable :(
 	 */
 	cpuf = cpu_get_freq(cpu);
-	while (ex64hi(cpuf) || ex64lo(cpuf) > 0x7fffffffU)
-		cpuf = div64u64(cpuf, 2);
-	cpuf = make64(-ex64lo(cpuf), ex64hi(cpuf));
+	while ((unsigned long)(cpuf>>32) ||
+	       (unsigned long)cpuf > 0x7fffffffU)
+		cpuf = cpuf / 2;
+	cpuf = make64(-(unsigned long)cpuf, (unsigned long)(cpuf>>32));
 	watchdog->resetval = watchdog->watchdog_resetval = cpuf;
 
-	ia32_msr_write(INTEL_MSR_PERFMON_CRT0, 0, ex64lo(cpuf));
+	ia32_msr_write(INTEL_MSR_PERFMON_CRT0, 0, (unsigned long)cpuf);
 
 	ia32_msr_write(INTEL_MSR_PERFMON_SEL0, 0,
 			val | INTEL_MSR_PERFMON_SEL0_ENABLE);
@@ -53,7 +54,8 @@ static void intel_arch_watchdog_init(const unsigned cpu)
 static void intel_arch_watchdog_reinit(const unsigned cpu)
 {
 	lapic_write(LAPIC_LVTPCR, APIC_ICR_DM_NMI);
-	ia32_msr_write(INTEL_MSR_PERFMON_CRT0, 0, ex64lo(watchdog->resetval));
+	ia32_msr_write(INTEL_MSR_PERFMON_CRT0, 0,
+		(unsigned long)watchdog->resetval);
 }
 
 int arch_watchdog_init(void)
@@ -163,18 +165,19 @@ static int intel_arch_watchdog_profile_init(const unsigned freq)
 
 	/* FIXME works only if all CPUs have the same freq */
 	cpuf = cpu_get_freq(cpuid);
-	cpuf = div64u64(cpuf, freq);
+	cpuf = cpuf / freq;
 
 	/*
 	 * if freq is too low and the cpu freq too high we may get in a range of
 	 * insane value which cannot be handled by the 31bit CPU perf counter
 	 */
-	if (ex64hi(cpuf) != 0 || ex64lo(cpuf) > 0x7fffffffU) {
+	if ((unsigned long)(cpuf>>32) != 0 ||
+	    (unsigned long)cpuf > 0x7fffffffU) {
 		printf("ERROR : nmi watchdog ticks exceed 31bits, use higher frequency\n");
 		return EINVAL;
 	}
 
-	cpuf = make64(-ex64lo(cpuf), ex64hi(cpuf));
+	cpuf = make64(-(unsigned long)cpuf, (unsigned long)(cpuf>>32));
 	watchdog->profile_resetval = cpuf;
 
 	return OK;
@@ -206,7 +209,8 @@ static void amd_watchdog_init(const unsigned cpu)
 	watchdog->resetval = watchdog->watchdog_resetval = cpuf;
 
 	ia32_msr_write(AMD_MSR_EVENT_CTR0,
-		       ex64hi(watchdog->resetval), ex64lo(watchdog->resetval));
+		       (unsigned long)(watchdog->resetval>>32),
+		       (unsigned long)watchdog->resetval);
 
 	ia32_msr_write(AMD_MSR_EVENT_SEL0, 0,
 			val | AMD_MSR_EVENT_SEL0_ENABLE);
@@ -219,7 +223,8 @@ static void amd_watchdog_reinit(const unsigned cpu)
 {
 	lapic_write(LAPIC_LVTPCR, APIC_ICR_DM_NMI);
 	ia32_msr_write(AMD_MSR_EVENT_CTR0,
-		       ex64hi(watchdog->resetval), ex64lo(watchdog->resetval));
+		       (unsigned long)(watchdog->resetval>>32),
+		       (unsigned long)watchdog->resetval);
 }
 
 static int amd_watchdog_profile_init(const unsigned freq)
@@ -228,7 +233,7 @@ static int amd_watchdog_profile_init(const unsigned freq)
 
 	/* FIXME works only if all CPUs have the same freq */
 	cpuf = cpu_get_freq(cpuid);
-	cpuf = div64u64(cpuf, freq);
+	cpuf = cpuf / freq;
 
 	cpuf = -cpuf;
 	watchdog->profile_resetval = cpuf;

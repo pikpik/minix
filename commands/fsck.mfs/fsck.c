@@ -657,12 +657,13 @@ void chksuper()
 
 int inoblock(int inn)
 {
-  return div64u(mul64u(inn - 1, INODE_SIZE), block_size) + BLK_ILIST;
+  return (unsigned long)(mul64u(inn - 1, INODE_SIZE) / block_size)
+		+ BLK_ILIST;
 }
 
 int inooff(int inn)
 {
-  return rem64u(mul64u(inn - 1, INODE_SIZE), block_size);
+  return (unsigned)(mul64u(inn - 1, INODE_SIZE) % block_size);
 }
 
 /* Make a listing of the inodes given by `clist'.  If `repair' is set, ask

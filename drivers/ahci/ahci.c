@@ -363,8 +363,8 @@ static int atapi_read_capacity(struct port_state *ps, int cmd)
 	dprintf(V_INFO,
 		("%s: medium detected (%u byte sectors, %lu MB size)\n",
 		ahci_portname(ps), ps->sector_size,
-		div64u(mul64(ps->lba_count, ps->sector_size),
-		1024*1024)));
+		(usigned long)(mul64(ps->lba_count, ps->sector_size)
+			/ 1024*1024)));
 
 	return OK;
 }
@@ -480,10 +480,10 @@ static int atapi_transfer(struct port_state *ps, int cmd, u64_t start_lba,
 	/* Fill in a packet. */
 	memset(packet, 0, sizeof(packet));
 	packet[0] = write ? ATAPI_CMD_WRITE : ATAPI_CMD_READ;
-	packet[2] = (ex64lo(start_lba) >> 24) & 0xFF;
-	packet[3] = (ex64lo(start_lba) >> 16) & 0xFF;
-	packet[4] = (ex64lo(start_lba) >>  8) & 0xFF;
-	packet[5] = ex64lo(start_lba) & 0xFF;
+	packet[2] = ((unsigned long)start_lba >> 24) & 0xFF;
+	packet[3] = ((unsigned long)start_lba >> 16) & 0xFF;
+	packet[4] = ((unsigned long)start_lba >>  8) & 0xFF;
+	packet[5] = (unsigned long)start_lba & 0xFF;
 	packet[6] = (count >> 24) & 0xFF;
 	packet[7] = (count >> 16) & 0xFF;
 	packet[8] = (count >>  8) & 0xFF;
@@ -610,8 +610,8 @@ static int ata_transfer(struct port_state *ps, int cmd, u64_t start_lba,
 			fis.cf_cmd = ATA_CMD_READ_DMA_EXT;
 		}
 	}
-	fis.cf_lba = ex64lo(start_lba) & 0x00FFFFFFL;
-	fis.cf_lba_exp = ex64lo(rshift64(start_lba, 24)) & 0x00FFFFFFL;
+	fis.cf_lba = (unsigned long)start_lba & 0x00FFFFFFL;
+	fis.cf_lba_exp = (unsigned long)rshift64(start_lba, 24) & 0x00FFFFFFL;
 	fis.cf_sec = count & 0xFF;
 	fis.cf_sec_exp = (count >> 8) & 0xFF;
 
@@ -1124,7 +1124,7 @@ static ssize_t port_transfer(struct port_state *ps, u64_t pos, u64_t eof,
 
 	dprintf(V_REQ, ("%s: %s for %lu bytes at pos %08lx%08lx\n",
 		ahci_portname(ps), write ? "write" : "read", size,
-		ex64hi(pos), ex64lo(pos)));
+		(unsigned long)(pos>>32), (unsigned long)pos));
 
 	assert(ps->state == STATE_GOOD_DEV);
 	assert(ps->flags & FLAG_HAS_MEDIUM);
@@ -1141,10 +1141,10 @@ static ssize_t port_transfer(struct port_state *ps, u64_t pos, u64_t eof,
 	 * guarantees that the starting position lies within the partition.
 	 */
 	if (cmp64(pos + size, eof) >= 0)
-		size = (vir_bytes) diff64(eof, pos);
+		size = (vir_bytes) (unsigned) (eof - pos);
 
-	start_lba = div64(pos, ps->sector_size);
-	lead = rem64u(pos, ps->sector_size);
+	start_lba = pos / ps->sector_size;
+	lead = (unsigned)(pos % ps->sector_size);
 	count = (lead + size + ps->sector_size - 1) / ps->sector_size;
 
 	/* Position must be word-aligned for read requests, and sector-aligned
@@ -1473,8 +1473,9 @@ static void port_id_check(struct port_state *ps, int success)
 
 		if (ps->flags & FLAG_HAS_MEDIUM)
 			printf(", %u byte sectors, %lu MB size",
-				ps->sector_size, div64u(mul64(ps->lba_count,
-				ps->sector_size), 1024*1024));
+				ps->sector_size,
+				(unsigned long)(mul64(ps->lba_count,
+				ps->sector_size) / 1024*1024));
 
 		printf("\n");
 	}

@@ -67,8 +67,8 @@ int do_read()
   if (r < 0)
 	return r;
 
-  m_out.RES_SEEK_POS_HI = ex64hi(pos);
-  m_out.RES_SEEK_POS_LO = ex64lo(pos);
+  m_out.RES_SEEK_POS_HI = (unsigned long)(pos>>32);
+  m_out.RES_SEEK_POS_LO = (unsigned long)pos;
   m_out.RES_NBYTES = off;
 
   return OK;

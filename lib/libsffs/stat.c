@@ -73,7 +73,7 @@ int do_stat()
   if (cmp64u(attr.a_size, LONG_MAX) > 0)
 	stat.st_size = LONG_MAX;
   else
-	stat.st_size = ex64lo(attr.a_size);
+	stat.st_size = (unsigned long)attr.a_size;
   stat.st_atimespec = attr.a_atime;
   stat.st_mtimespec = attr.a_mtime;
   stat.st_ctimespec = attr.a_ctime;

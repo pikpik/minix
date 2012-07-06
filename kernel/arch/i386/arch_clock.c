@@ -283,9 +283,12 @@ void context_stop(struct proc * p)
 		p->p_cpu_time_left = 0;
 #else
 		/* if (tsc_delta < p->p_cpu_time_left) in 64bit */
-		if (ex64hi(tsc_delta) < ex64hi(p->p_cpu_time_left) ||
-				(ex64hi(tsc_delta) == ex64hi(p->p_cpu_time_left) &&
-				 (unsigned long)tsc_delta < (unsigned long)p->p_cpu_time_left))
+		if ((unsigned long)(tsc_delta>>32) <
+		     (unsigned long)(p->p_cpu_time_left>>32) ||
+		    ((unsigned long)(tsc_delta>>32) ==
+		     (unsigned long)(p->p_cpu_time_left>>32) &&
+		    (unsigned long)tsc_delta <
+		     (unsigned long)p->p_cpu_time_left))
 			p->p_cpu_time_left = p->p_cpu_time_left - tsc_delta;
 		else {
 			p->p_cpu_time_left = 0;

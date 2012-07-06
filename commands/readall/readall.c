@@ -117,7 +117,7 @@ char *argv[];
   	perror("ioctl DIOCGETP");
   	return 1;
   }
-  nblocks = div64u(entry.size, BLOCK_SIZE);
+  nblocks = (unsigned long)(entry.size / BLOCK_SIZE);
 
   time(&starttime);
   /* Read the entire file. Try it in large chunks, but if an error

@@ -13,8 +13,8 @@ u64_t *newpos;
   message m;
 
   m.m2_i1 = fd;
-  m.m2_l1 = ex64lo(offset);
-  m.m2_l2 = ex64hi(offset);
+  m.m2_l1 = (unsigned long)offset;
+  m.m2_l2 = (unsigned long)(offset>>32);
   m.m2_i2 = whence;
   if (_syscall(VFS_PROC_NR, LLSEEK, &m) < 0) return -1;
   if (newpos)

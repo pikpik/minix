@@ -73,8 +73,8 @@ u8_t *tmp_buf;			/* temporary buffer */
   /* Get the geometry of the device to partition */
   if ((dv = (*bdp->bdr_part)(device)) == NULL
 				|| cmp64u(dv->dv_size, 0) == 0) return;
-  base = div64u(dv->dv_base, SECTOR_SIZE);
-  limit = base + div64u(dv->dv_size, SECTOR_SIZE);
+  base = (unsigned long)(dv->dv_base / SECTOR_SIZE);
+  limit = base + (unsigned long)(dv->dv_size / SECTOR_SIZE);
 
   /* Read the partition table for the device. */
   if(!get_part_table(bdp, device, 0L, table, tmp_buf)) {

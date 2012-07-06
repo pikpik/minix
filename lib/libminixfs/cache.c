@@ -34,11 +34,12 @@ u32_t fs_bufs_heuristic(int minbufs, u32_t btotal, u32_t bfree,
 	return bufs;
   }
 
-  kbytes_remain_mem = div64u(mul64u(vsi.vsi_free, vsi.vsi_pagesize), 1024);
+  kbytes_remain_mem = (unsigned long)(mul64u(vsi.vsi_free,
+			vsi.vsi_pagesize) / 1024);
 
   /* check fs usage. */
-  kbytes_used_fs = div64u(mul64u(bused, blocksize), 1024);
-  kbytes_total_fs = div64u(mul64u(btotal, blocksize), 1024);
+  kbytes_used_fs = (unsigned long)(mul64u(bused, blocksize) / 1024);
+  kbytes_total_fs = (unsigned long)(mul64u(btotal, blocksize) / 1024);
 
   /* heuristic for a desired cache size based on FS usage;
    * but never bigger than half of the total filesystem

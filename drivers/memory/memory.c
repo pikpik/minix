@@ -245,7 +245,8 @@ static int m_transfer(
   vir_bytes dev_vaddr;
 
   /* ZERO_DEV and NULL_DEV are infinite in size. */
-  if (m_device != ZERO_DEV && m_device != NULL_DEV && ex64hi(pos64) != 0)
+  if (m_device != ZERO_DEV && m_device != NULL_DEV &&
+      (unsigned long)(pos64>>32) != 0)
 	return OK;	/* Beyond EOF */
   position= cv64ul(pos64);
 
@@ -461,7 +462,7 @@ static int m_block_transfer(
   dv_size = cv64ul(dv->dv_size);
   dev_vaddr = m_vaddrs[minor];
 
-  if (ex64hi(pos64) != 0)
+  if ((unsigned long)(pos64>>32) != 0)
 	return OK;	/* Beyond EOF */
   position= cv64ul(pos64);
 
@@ -596,10 +597,10 @@ static int m_block_ioctl(dev_t minor, unsigned int request, endpoint_t endpt,
   }
   if(m_vaddrs[minor]) {
 	u32_t size;
-	if(ex64hi(dv->dv_size)) {
+	if((unsigned long)(dv->dv_size>>32)) {
 		panic("huge old ramdisk");
 	}
-	size = ex64lo(dv->dv_size);
+	size = (unsigned long)dv->dv_size;
 	minix_munmap((void *) m_vaddrs[minor], size);
 	m_vaddrs[minor] = (vir_bytes) NULL;
   }

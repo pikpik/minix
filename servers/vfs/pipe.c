@@ -190,9 +190,9 @@ int notouch;			/* check only */
   off_t pos;
   int r = OK;
 
-  if (ex64hi(position) != 0)
+  if ((unsigned long)(position>>32) != 0)
 	panic("pipe_check: position too large in pipe");
-  pos = ex64lo(position);
+  pos = (unsigned long)position;
 
   /* If reading, check for empty pipe. */
   if (rw_flag == READING) {

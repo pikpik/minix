@@ -8,7 +8,7 @@
 #define SEC2SUM_NR(nr)	((nr)/NR_SUM_SEC*(NR_SUM_SEC+1) + NR_SUM_SEC)
 #define LOG2PHYS(nr)	((nr)/NR_SUM_SEC*(NR_SUM_SEC+1) + (nr)%NR_SUM_SEC)
 
-#define POS2SEC(nr)	div64u((nr), SECTOR_SIZE)
+#define POS2SEC(nr)	(unsigned long)((nr) / SECTOR_SIZE)
 #define SEC2POS(nr)	mul64u((nr), SECTOR_SIZE)
 
 /* Data buffers. */
@@ -543,7 +543,8 @@ int transfer(u64_t pos, char *buffer, size_t *sizep, int flag_rw)
 
 #if DEBUG2
 	printf("Filter: transfer: pos 0x%lx:0x%lx -> phys_pos 0x%lx:0x%lx\n",
-		ex64hi(pos), ex64lo(pos), ex64hi(phys_pos), ex64lo(phys_pos));
+		(unsigned long)(pos>>32), (unsigned long)pos,
+		(unsigned long)(phys_pos>>32), (unsigned long)phys_pos);
 #endif
 
 	/* Compute the size for the buffer and for the user data after
@@ -569,8 +570,8 @@ int transfer(u64_t pos, char *buffer, size_t *sizep, int flag_rw)
 
 #if DEBUG2
 	printf("Filter: transfer: read_write(%x:%x, %u, %d) = %d, %u\n",
-		ex64hi(phys_pos), ex64lo(phys_pos), ext_size, flag_rw, r,
-		res_size);
+		(unsigned long)(phys_pos>>32), (unsigned long)phys_pos,
+		ext_size, flag_rw, r, res_size);
 #endif
 
 	if (r != OK) {

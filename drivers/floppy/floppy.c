@@ -474,7 +474,7 @@ static ssize_t f_transfer(
   fp = f_fp;
   dv_size = cv64ul(f_dv->dv_size);
 
-  if (ex64hi(pos64) != 0)
+  if ((unsigned long)(pos64>>32) != 0)
 	return OK;	/* Way beyond EOF */
   position= cv64ul(pos64);
   total = 0;
@@ -500,7 +500,8 @@ static ssize_t f_transfer(
 	/* Which block on disk and how close to EOF? */
 	if (position >= dv_size) return(total);		/* At EOF */
 	if (position + nbytes > dv_size) nbytes = dv_size - position;
-	block = div64u(f_dv->dv_base + position, SECTOR_SIZE);
+	block = (unsigned long)((f_dv->dv_base + position)
+		/ SECTOR_SIZE);
 
 	if ((nbytes & SECTOR_MASK) != 0) return(EINVAL);
 

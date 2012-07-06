@@ -245,8 +245,8 @@ static int raw_xfer(dev_t minor, u64_t pos, iovec_s_t *iovec, int nr_req,
 	memset(&m, 0, sizeof(m));
 	m.m_type = write ? BDEV_SCATTER : BDEV_GATHER;
 	m.BDEV_MINOR = minor;
-	m.BDEV_POS_LO = ex64lo(pos);
-	m.BDEV_POS_HI = ex64hi(pos);
+	m.BDEV_POS_LO = (unsigned long)pos;
+	m.BDEV_POS_HI = (unsigned long)(pos>>32);
 	m.BDEV_COUNT = nr_req;
 	m.BDEV_GRANT = grant;
 	m.BDEV_ID = rand();
@@ -1515,7 +1515,7 @@ static void real_limits(dev_t sub0_minor, dev_t sub1_minor, int part_secs)
 
 	if (res.type == RESULT_OK && cmp64u(subpart.size, 0)) {
 		res.type = RESULT_BADVALUE;
-		res.value = ex64lo(subpart.size);
+		res.value = (unsigned long)subpart.size;
 	}
 
 	got_result(&res, "ioctl to get first subpartition");
@@ -1524,7 +1524,7 @@ static void real_limits(dev_t sub0_minor, dev_t sub1_minor, int part_secs)
 
 	if (res.type == RESULT_OK && cmp64u(subpart.size, 0)) {
 		res.type = RESULT_BADVALUE;
-		res.value = ex64lo(subpart.size);
+		res.value = (unsigned long)subpart.size;
 	}
 
 	got_result(&res, "ioctl to get second subpartition");
@@ -1538,7 +1538,7 @@ static void real_limits(dev_t sub0_minor, dev_t sub1_minor, int part_secs)
 	entry = (struct part_entry *) &buf_ptr[PART_TABLE_OFF];
 
 	entry[0].sysind = MINIX_PART;
-	entry[0].lowsec = div64u(part.base, sector_size) + 1;
+	entry[0].lowsec = (unsigned long)(part.base / sector_size) + 1;
 	entry[0].size = part_secs;
 	entry[1].sysind = MINIX_PART;
 	entry[1].lowsec = entry[0].lowsec + entry[0].size;
@@ -2373,7 +2373,7 @@ static void high_disk_pos(void)
 	u64_t base_pos;
 
 	base_pos = make64(sector_size * 4, 1L);
-	base_pos = sub64u(base_pos, rem64u(base_pos, sector_size));
+	base_pos = sub64u(base_pos, (unsigned)(base_pos % sector_size));
 
 	/* The partition end must exceed 32 bits. */
 	if (cmp64(part.base + part.size, base_pos) < 0) {
@@ -2415,7 +2415,7 @@ static void high_part_pos(void)
 	}
 
 	base_pos = make64(sector_size * 4, 1L);
-	base_pos = sub64u(base_pos, rem64u(base_pos, sector_size));
+	base_pos = sub64u(base_pos, (unsigned)(base_pos % sector_size));
 
 	if (cmp64(part.size, base_pos) < 0) {
 		test_group("high partition positions", FALSE);

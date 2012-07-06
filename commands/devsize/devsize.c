@@ -47,6 +47,6 @@ char *device;
   	exit(1);
   }
   close(fd);
-  d = div64u(entry.size, 512);
+  d = (unsigned long)(entry.size / 512);
   return d;
 }

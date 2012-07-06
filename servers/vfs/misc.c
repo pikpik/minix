@@ -245,9 +245,9 @@ int do_fcntl()
 	switch(flock_arg.l_whence) {
 	  case SEEK_SET: start = 0; break;
 	  case SEEK_CUR:
-		if (ex64hi(f->filp_pos) != 0)
+		if ((unsigned long)(f->filp_pos>>32) != 0)
 			panic("do_fcntl: position in file too high");
-		start = ex64lo(f->filp_pos);
+		start = (unsigned long)f->filp_pos;
 		break;
 	  case SEEK_END: start = f->filp_vno->v_size; break;
 	  default: r = EINVAL;

@@ -310,11 +310,11 @@ void geometry(void)
 			/ (geometry.sectors*geometry.heads) + 1;
 	}
 	close(fd);
-	primary.lowsec= div64u(geometry.base, SECTOR_SIZE);
-	primary.size= div64u(geometry.size, SECTOR_SIZE);
-	cylinders= geometry.cylinders;
-	heads= geometry.heads;
-	sectors= geometry.sectors;
+	primary.lowsec = (unsigned long)(geometry.base / SECTOR_SIZE);
+	primary.size = (unsigned long)(geometry.size / SECTOR_SIZE);
+	cylinders = geometry.cylinders;
+	heads = geometry.heads;
+	sectors = geometry.sectors;
 
 	/* Is this a primary partition table?  If so then pad partitions. */
 	pad= (!mflag && primary.lowsec == 0);

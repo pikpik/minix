@@ -86,8 +86,8 @@ struct sffs_attr *attr;
   RPC_NEXT8 = mask;
 
   RPC_NEXT32 = !!(S_ISDIR(attr->a_mode));
-  RPC_NEXT32 = ex64lo(attr->a_size);
-  RPC_NEXT32 = ex64hi(attr->a_size);
+  RPC_NEXT32 = (unsigned long)attr->a_size;
+  RPC_NEXT32 = (unsigned long)(attr->a_size>>32);
 
   time_put((attr->a_mask & HGFS_ATTR_CRTIME) ? &attr->a_crtime : NULL);
   time_put((attr->a_mask & HGFS_ATTR_ATIME) ? &attr->a_atime : NULL);

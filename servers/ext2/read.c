@@ -169,7 +169,7 @@ int fs_breadwrite(void)
   cum_io = 0;
   /* Split the transfer into chunks that don't span two blocks. */
   while (nrbytes > 0) {
-	  off = rem64u(position, block_size);	/* offset in blk*/
+	  off = (unsigned)(position % block_size);	/* offset in blk */
 	  chunk = min(nrbytes, block_size - off);
 
 	  /* Read or write 'chunk' bytes. */
@@ -185,8 +185,8 @@ int fs_breadwrite(void)
 	  position = position + chunk;	/* position within the file */
   }
 
-  fs_m_out.RES_SEEK_POS_LO = ex64lo(position);
-  fs_m_out.RES_SEEK_POS_HI = ex64hi(position);
+  fs_m_out.RES_SEEK_POS_LO = (unsigned long)position;
+  fs_m_out.RES_SEEK_POS_HI = (unsigned long)(position>>32);
 
   if (rdwt_err != OK) r = rdwt_err;     /* check for disk error */
   if (rdwt_err == END_OF_FILE) r = OK;
@@ -226,12 +226,12 @@ int *completed;                 /* number of bytes copied */
   block_spec = (rip->i_mode & I_TYPE) == I_BLOCK_SPECIAL;
 
   if (block_spec) {
-	b = div64u(position, block_size);
+	b = (unsigned long)(position / block_size);
 	dev = (dev_t) rip->i_block[0];
   } else {
-	if (ex64hi(position) != 0)
+	if ((unsigned long)(position>>32) != 0)
 		panic("rw_chunk: position too high");
-	b = read_map(rip, (off_t) ex64lo(position));
+	b = read_map(rip, (off_t) (unsigned long)position);
 	dev = rip->i_dev;
   }
 
@@ -242,7 +242,8 @@ int *completed;                 /* number of bytes copied */
 		zero_block(bp);
 	} else {
 		/* Writing to a nonexistent block. Create and enter in inode.*/
-		if ((bp = new_block(rip, (off_t) ex64lo(position))) == NULL)
+		if ((bp = new_block(rip,
+			(off_t) (unsigned long)position)) == NULL)
 			return(err_code);
         }
   } else if (rw_flag == READING) {
@@ -254,7 +255,8 @@ int *completed;                 /* number of bytes copied */
 	 * the cache, acquire it, otherwise just acquire a free buffer.
          */
 	n = (chunk == block_size ? NO_READ : NORMAL);
-	if (!block_spec && off == 0 && (off_t) ex64lo(position) >= rip->i_size)
+	if (!block_spec && off == 0 && (off_t)
+		(unsigned long)position >= rip->i_size)
 		n = NO_READ;
 	bp = get_block(dev, b, n);
   }
@@ -264,7 +266,7 @@ int *completed;                 /* number of bytes copied */
 	panic("bp not valid in rw_chunk, this can't happen");
 
   if (rw_flag == WRITING && chunk != block_size && !block_spec &&
-      (off_t) ex64lo(position) >= rip->i_size && off == 0) {
+      (off_t) (unsigned long)position >= rip->i_size && off == 0) {
 	zero_block(bp);
   }
 
@@ -477,7 +479,7 @@ unsigned bytes_ahead;           /* bytes beyond position for immediate use */
    * indirect blocks (but don't call read_map!).
    */
 
-  fragment = rem64u(position, block_size);
+  fragment = (unsigned)(position % block_size);
   position = sub64u(position, fragment);
   bytes_ahead += fragment;
 
@@ -486,13 +488,15 @@ unsigned bytes_ahead;           /* bytes beyond position for immediate use */
   if (block_spec && rip->i_size == 0) {
 	blocks_left = (block_t) NR_IOREQS;
   } else {
-	blocks_left = (block_t) (rip->i_size-ex64lo(position)+(block_size-1)) /
-                                                                block_size;
+	blocks_left = (block_t) (rip->i_size
+			- (unsigned long)position + (block_size - 1))
+			/ block_size;
 
 	/* Go for the first indirect block if we are in its neighborhood. */
 	if (!block_spec) {
 		ind1_pos = (EXT2_NDIR_BLOCKS) * block_size;
-		if ((off_t) ex64lo(position) <= ind1_pos && rip->i_size > ind1_pos) {
+		if ((off_t) (unsigned long)position <= ind1_pos
+		    && rip->i_size > ind1_pos) {
 			blocks_ahead++;
 			blocks_left++;
 		}

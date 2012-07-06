@@ -277,7 +277,8 @@ char *argv[];
 	}
 	if (i == 0) {
 #if defined(_MINIX) || defined(__minix)
-		uint32_t kb = div64u(mul64u(blocks, block_size), 1024);
+		uint32_t kb = (unsigned long)(mul64u(blocks, block_size)
+				/ 1024);
 #else
 		uint32_t kb = ((unsigned long long) blocks * block_size) / 1024;
 #endif
@@ -412,8 +413,8 @@ char *device;
        return 0;
   }
 
-  d = div64u(bytes, block_size);
-  rem = rem64u(bytes, block_size);
+  d = (unsigned long)(bytes / block_size);
+  rem = (unsigned)(bytes % block_size);
 
   resize = mul64u(d, block_size) + rem;
   if(cmp64(resize, bytes) != 0) {

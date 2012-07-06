@@ -531,12 +531,14 @@ void geometry(void)
 		if (ioctl(device, DIOCGETP, &geometry) < 0)
 			err= errno;
 		else {
-			table[0].lowsec= div64u(geometry.base, SECTOR_SIZE);
-			table[0].size= div64u(geometry.size, SECTOR_SIZE);
-			cylinders= geometry.cylinders;
-			heads= geometry.heads;
-			sectors= geometry.sectors;
-			precise= 1;
+			table[0].lowsec = (unsigned long)(geometry.base
+						/ SECTOR_SIZE);
+			table[0].size = (unsigned long)(geometry.size
+						/ SECTOR_SIZE);
+			cylinders = geometry.cylinders;
+			heads = geometry.heads;
+			sectors = geometry.sectors;
+			precise = 1;
 		}
 	} else {
 		err= ENODEV;
@@ -584,8 +586,10 @@ exit(1);
 	 * This makes sense for subpartitioning primary partitions.
 	 */
 	if (precise && ioctl(device, DIOCGETP, &geometry) >= 0) {
-		table[0].lowsec= div64u(geometry.base, SECTOR_SIZE);
-		table[0].size= div64u(geometry.size, SECTOR_SIZE);
+		table[0].lowsec = (unsigned long)(geometry.base
+					/ SECTOR_SIZE);
+		table[0].size = (unsigned long)(geometry.size
+					/ SECTOR_SIZE);
 	} else {
 		precise= 0;
 	}
@@ -2183,8 +2187,8 @@ sanitycheck_failed(char *dev, struct part_entry *pe)
 
 	close(fd);
 
-	it_lowsec = div64u(part.base, SECTOR_SIZE);
-	it_secsize = div64u(part.size, SECTOR_SIZE);
+	it_lowsec = (unsigned long)(part.base / SECTOR_SIZE);
+	it_secsize = (unsigned long)(part.size / SECTOR_SIZE);
 
 	if(it_lowsec != pe->lowsec || it_secsize != pe->size) {
 		fprintf(stderr, "\nReturned and set numbers don't match up!\n");

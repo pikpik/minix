@@ -36,8 +36,8 @@ void time_put(struct timespec *tsp)
 	hgfstime = mul64u(tsp->tv_sec, 10000000) + (tsp->tv_nsec / 100);
 	hgfstime = hgfstime + time_offset;
 
-	RPC_NEXT32 = ex64lo(hgfstime);
-	RPC_NEXT32 = ex64hi(hgfstime);
+	RPC_NEXT32 = (unsigned long)hgfstime;
+	RPC_NEXT32 = (unsigned long)(hgfstime>>32);
   } else {
 	RPC_NEXT32 = 0;
 	RPC_NEXT32 = 0;
@@ -62,8 +62,8 @@ void time_get(struct timespec *tsp)
 
 	hgfstime = sub64(make64(time_lo, time_hi), time_offset);
 
-	tsp->tv_sec = div64u(hgfstime, 10000000);
-	tsp->tv_nsec = rem64u(hgfstime, 10000000) * 100;
+	tsp->tv_sec = (unsigned long)(hgfstime / 10000000);
+	tsp->tv_nsec = (unsigned)(hgfstime % 10000000) * 100;
   }
   else RPC_ADVANCE(sizeof(u32_t) * 2);
 }

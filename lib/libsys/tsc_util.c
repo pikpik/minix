@@ -85,12 +85,12 @@ u32_t tsc_64_to_micros(u64_t tsc)
 
 	CALIBRATE;
 
-	tmp = div64u64(tsc, calib_mhz);
-	if (ex64hi(tmp)) {
+	tmp = tsc / calib_mhz;
+	if ((unsigned long)(tmp>>32)) {
 		printf("tsc_64_to_micros: more than 2^32ms\n");
 		return ~0UL;
 	} else {
-		return ex64lo(tmp);
+		return (unsigned long)tmp;
 	}
 }
 

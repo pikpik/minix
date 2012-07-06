@@ -646,15 +646,15 @@ int do_lseek()
 	newpos = sub64ul(pos, -offset);
 
   /* Check for overflow. */
-  if (ex64hi(newpos) != 0) {
+  if ((unsigned long)(newpos>>32) != 0) {
 	r = EOVERFLOW;
-  } else if ((off_t) ex64lo(newpos) < 0) { /* no negative file size */
+  } else if ((off_t) (unsigned long)newpos < 0) { /* no negative file size */
 	r = EOVERFLOW;
   } else {
 	rfilp->filp_pos = newpos;
 
 	/* insert the new position into the output message */
-	m_out.reply_l1 = ex64lo(newpos);
+	m_out.reply_l1 = (unsigned long)newpos;
 
 	if (cmp64(newpos, rfilp->filp_pos) != 0) {
 		/* Inhibit read ahead request */
@@ -711,8 +711,8 @@ int do_llseek()
 	rfilp->filp_pos = newpos;
 
 	/* insert the new position into the output message */
-	m_out.reply_l1 = ex64lo(newpos);
-	m_out.reply_l2 = ex64hi(newpos);
+	m_out.reply_l1 = (unsigned long)newpos;
+	m_out.reply_l2 = (unsigned long)(newpos>>32);
 
 	if (cmp64(newpos, rfilp->filp_pos) != 0) {
 		/* Inhibit read ahead request */

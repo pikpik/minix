@@ -483,12 +483,14 @@ void geometry(void)
 		if (ioctl(device, DIOCGETP, &geometry) < 0)
 			err= errno;
 		else {
-			table[0].lowsec= div64u(geometry.base, SECTOR_SIZE);
-			table[0].size= div64u(geometry.size, SECTOR_SIZE);
-			cylinders= geometry.cylinders;
-			heads= geometry.heads;
-			sectors= geometry.sectors;
-			precise= 1;
+			table[0].lowsec = (unsigned long)(geometry.base
+						/ SECTOR_SIZE);
+			table[0].size = (unsigned long )(geometry.size
+						/ SECTOR_SIZE);
+			cylinders = geometry.cylinders;
+			heads = geometry.heads;
+			sectors = geometry.sectors;
+			precise = 1;
 		}
 	} else {
 		err= ENODEV;
@@ -552,10 +554,12 @@ void geometry(void)
 	 * This makes sense for subpartitioning primary partitions.
 	 */
 	if (precise && ioctl(device, DIOCGETP, &geometry) >= 0) {
-		table[0].lowsec= div64u(geometry.base, SECTOR_SIZE);
-		table[0].size= div64u(geometry.size, SECTOR_SIZE);
+		table[0].lowsec = (unsigned long)(geometry.base
+					/ SECTOR_SIZE);
+		table[0].size = (unsigned long)(geometry.size
+					/ SECTOR_SIZE);
 	} else {
-		precise= 0;
+		precise = 0;
 	}
 	recompute0();
 	sort();
