@@ -139,6 +139,7 @@ start)
     then	usrdev="$cddev"p2
     		echo "/usr on cd is $usrdev"
 		mount -r $usrdev /usr
+		mount -a
     else	
     # If we're not booting from CD, fsck + mount using /etc/fstab.
 		read <$FSTAB fstabline

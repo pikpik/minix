@@ -39,6 +39,8 @@ PREINSTALLED_PACKAGES="
 	bmake
 	binutils
 	clang
+	dde-linux26
+	dde-linux26-usb-drivers
 	"
 #	pkg_tarup
 
@@ -325,22 +327,42 @@ extrakb=`du -ks $RELEASEDIR/usr/install | awk '{ print $1 }'`
 find $RELEASEDIR/usr | fgrep -v /install/ | wc -l >$RELEASEDIR/.usrfiles
 find $RELEASEDIR -print -path $RELEASEDIR/usr -prune | wc -l >$RELEASEDIR/.rootfiles
 
-fstab_marker="# Poor man's File System Table."
 echo " * Writing fstab"
 if [ "$USB" -ne 0 ]
 then
 	echo \
-"$fstab_marker
-root=/dev/c0d7p0s0
-usr=/dev/c0d7p0s2
+"/dev/c0d7p0s0	/	mfs	rw			0	1
+/dev/c0d7p0s2	/usr	mfs	rw			0	2
+none		/sys	devman	rw,rslabel=devman	0	0
 " > $RELEASEDIR/etc/fstab
+	echo \
+"/dev/ram / 3 rw
+/dev/c0d7p0s2 /usr MFSv3 rw
+none /sys devman rw
+" > $RELEASEDIR/etc/mtab
 elif [ "$HDEMU" -ne 0 ]
 then
 	echo \
-"$fstab_marker
-root=/dev/c0d7p0s0
-usr=/dev/c0d7p0s2
-usr_roflag=\"-r\"" > $RELEASEDIR/etc/fstab
+"/dev/c0d7p0s0	/	mfs	rw			0	1
+/dev/c0d7p0s2	/usr	mfs	r			0	2
+none		/sys	devman	rw,rslabel=devman	0	0
+" > $RELEASEDIR/etc/fstab
+	echo \
+"/dev/ram / 3 rw
+/dev/c0d7p0s2 /usr MFSv3 r
+none /sys devman rw
+" > $RELEASEDIR/etc/mtab
+else # CD
+	echo \
+"/dev/c0d2p0s0	/	mfs	rw			0	1
+/dev/c0d2p0s2	/usr	mfs	r			0	2
+none		/sys	devman	rw,rslabel=devman	0	0
+" > $RELEASEDIR/etc/fstab
+	echo \
+"/dev/ram / 3 rw
+/dev/c0d2p0s2 /usr MFSv3 r
+none /sys devman rw
+" > $RELEASEDIR/etc/mtab
 fi
 
 echo " * Mounting $TMPDISKROOT as $RELEASEMNTDIR"

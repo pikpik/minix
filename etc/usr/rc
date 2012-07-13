@@ -227,7 +227,7 @@ d=
 # Let packages run their own scripts
 for d in /usr/local/etc/rc.d /usr/pkg/etc/rc.d
 do
-if [ -d "$d" -a -z "$bootcd" ]
+if [ -d "$d" ]
 then	( if cd $d
 	then
 		echo -n "Local packages ($action): "
