@@ -1202,8 +1202,8 @@ static ssize_t w_transfer(
 	if ((nbytes & SECTOR_MASK) != 0) return(EINVAL);
 
 	/* Which block on disk and how close to EOF? */
-	if (cmp64(position, dv_size) >= 0) return(total);	/* At EOF */
-	if (cmp64(position + nbytes, dv_size) > 0)
+	if (position >= dv_size) return(total);	/* At EOF */
+	if ((position + nbytes) > dv_size)
 		nbytes = (unsigned) (dv_size - position);
 	block = (unsigned long)(w_dv->dv_base + position / SECTOR_SIZE);
 
@@ -1992,8 +1992,8 @@ static int atapi_transfer(
 	if ((before | nbytes) & 1) return(EINVAL);
 
 	/* Which block on disk and how close to EOF? */
-	if (cmp64(position, dv_size) >= 0) return(total);	/* At EOF */
-	if (cmp64(position + nbytes, dv_size) > 0)
+	if (position >= dv_size) return(total);	/* At EOF */
+	if ((position + nbytes) > dv_size)
 		nbytes = (unsigned) (dv_size - position);
 
 	nblocks = (before + nbytes + CD_SECTOR_SIZE - 1) / CD_SECTOR_SIZE;

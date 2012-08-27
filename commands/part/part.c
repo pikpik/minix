@@ -1598,8 +1598,8 @@ ssize_t boot_readwrite(int rw)
 		/* Move partition base. */
 		if (ioctl(device, DIOCGETP, &geom0) < 0) return -1;
 		geom_seek.base = geom0.base + off64;
-		geom_seek.size = cmp64(off64 + SECTOR_SIZE,
-			geom0.size) <= 0 ? _STATIC_BLOCK_SIZE : 0;
+		geom_seek.size = (off64 + SECTOR_SIZE) <= geom0.size
+			? _STATIC_BLOCK_SIZE : 0;
 		sync();
 		if (ioctl(device, DIOCSETP, &geom_seek) < 0) return -1;
 		if (lseek(device, (off_t) 0, SEEK_SET) == -1) return -1;

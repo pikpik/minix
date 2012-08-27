@@ -1092,7 +1092,7 @@ static void misc_ioctl(void)
 	got_result(&res, "ioctl to get partition");
 
 	/* The other tests do not check whether there is sufficient room. */
-	if (res.type == RESULT_OK && cmp64u(part.size, max_size * 2) < 0)
+	if (res.type == RESULT_OK && part.size < max_size * 2)
 		printf("WARNING: small partition, some tests may fail\n");
 
 	/* Test retrieving global driver open count. */
@@ -1422,8 +1422,8 @@ static void vir_limits(dev_t sub0_minor, dev_t sub1_minor, int part_secs)
 
 	vir_ioctl(sub0_minor, DIOCGETP, &subpart2, OK, &res);
 
-	if (res.type == RESULT_OK && (cmp64(subpart.base, subpart2.base) ||
-			cmp64(subpart.size, subpart2.size))) {
+	if (res.type == RESULT_OK && (subpart.base != subpart2.base ||
+			subpart.size != subpart2.size)) {
 		res.type = RESULT_BADVALUE;
 		res.value = 0;
 	}
@@ -1441,8 +1441,8 @@ static void vir_limits(dev_t sub0_minor, dev_t sub1_minor, int part_secs)
 
 	vir_ioctl(sub1_minor, DIOCGETP, &subpart2, OK, &res);
 
-	if (res.type == RESULT_OK && (cmp64(subpart.base, subpart2.base) ||
-			cmp64(subpart.size, subpart2.size))) {
+	if (res.type == RESULT_OK && (subpart.base != subpart2.base ||
+			subpart.size != subpart2.size)) {
 		res.type = RESULT_BADVALUE;
 		res.value = 0;
 	}
@@ -1513,7 +1513,7 @@ static void real_limits(dev_t sub0_minor, dev_t sub1_minor, int part_secs)
 
 	vir_ioctl(sub0_minor, DIOCGETP, &subpart, 0, &res);
 
-	if (res.type == RESULT_OK && cmp64u(subpart.size, 0)) {
+	if (res.type == RESULT_OK && subpart.size == 0) {
 		res.type = RESULT_BADVALUE;
 		res.value = (unsigned long)subpart.size;
 	}
@@ -1522,7 +1522,7 @@ static void real_limits(dev_t sub0_minor, dev_t sub1_minor, int part_secs)
 
 	vir_ioctl(sub1_minor, DIOCGETP, &subpart, 0, &res);
 
-	if (res.type == RESULT_OK && cmp64u(subpart.size, 0)) {
+	if (res.type == RESULT_OK && subpart.size == 0) {
 		res.type = RESULT_BADVALUE;
 		res.value = (unsigned long)subpart.size;
 	}
@@ -1564,9 +1564,9 @@ static void real_limits(dev_t sub0_minor, dev_t sub1_minor, int part_secs)
 
 	vir_ioctl(sub0_minor, DIOCGETP, &subpart, 0, &res);
 
-	if (res.type == RESULT_OK && (cmp64(subpart.base,
-		part.base + sector_size) ||
-		cmp64u(subpart.size, part_secs * sector_size))) {
+	if (res.type == RESULT_OK && (subpart.base !=
+		part.base + sector_size ||
+		subpart.size == part_secs * sector_size)) {
 
 		res.type = RESULT_BADVALUE;
 		res.value = 0;
@@ -1576,9 +1576,9 @@ static void real_limits(dev_t sub0_minor, dev_t sub1_minor, int part_secs)
 
 	vir_ioctl(sub1_minor, DIOCGETP, &subpart, 0, &res);
 
-	if (res.type == RESULT_OK && (cmp64(subpart.base,
-		part.base + ((1 + part_secs) * sector_size)) ||
-		cmp64u(subpart.size, part_secs * sector_size))) {
+	if (res.type == RESULT_OK && (subpart.base !=
+		part.base + ((1 + part_secs) * sector_size) ||
+		subpart.size == part_secs * sector_size)) {
 
 		res.type = RESULT_BADVALUE;
 		res.value = 0;
@@ -2376,7 +2376,7 @@ static void high_disk_pos(void)
 	base_pos = sub64u(base_pos, (unsigned)(base_pos % sector_size));
 
 	/* The partition end must exceed 32 bits. */
-	if (cmp64(part.base + part.size, base_pos) < 0) {
+	if (part.base + part.size < base_pos) {
 		test_group("high disk positions", FALSE);
 
 		return;
@@ -2385,7 +2385,7 @@ static void high_disk_pos(void)
 	base_pos = sub64u(base_pos, sector_size * 8);
 
 	/* The partition start must not. */
-	if (cmp64(base_pos, part.base) < 0) {
+	if (base_pos < part.base) {
 		test_group("high disk positions", FALSE);
 		return;
 	}
@@ -2394,7 +2394,7 @@ static void high_disk_pos(void)
 
 	base_pos = sub64(base_pos, part.base);
 
-	sweep_and_check(base_pos, !cmp64u(part.base, 0));
+	sweep_and_check(base_pos, part.base != 0);
 }
 
 static void high_part_pos(void)
@@ -2409,7 +2409,7 @@ static void high_part_pos(void)
 	/* If the partition starts at the beginning of the disk, this test is
 	 * no different from the high disk position test.
 	 */
-	if (cmp64u(part.base, 0) == 0) {
+	if (part.base == 0) {
 		/* don't complain: the test is simply superfluous now */
 		return;
 	}
@@ -2417,7 +2417,7 @@ static void high_part_pos(void)
 	base_pos = make64(sector_size * 4, 1L);
 	base_pos = sub64u(base_pos, (unsigned)(base_pos % sector_size));
 
-	if (cmp64(part.size, base_pos) < 0) {
+	if (part.size < base_pos) {
 		test_group("high partition positions", FALSE);
 
 		return;
@@ -2445,7 +2445,7 @@ static void high_lba_pos1(void)
 	base_pos = mul64u(1L << 24, sector_size);
 
 	/* The partition end must exceed the 24-bit sector point. */
-	if (cmp64(part.base + part.size, base_pos) < 0) {
+	if (part.base + part.size < base_pos) {
 		test_group("high LBA positions, part one", FALSE);
 
 		return;
@@ -2454,7 +2454,7 @@ static void high_lba_pos1(void)
 	base_pos = sub64u(base_pos, sector_size * 8);
 
 	/* The partition start must not. */
-	if (cmp64(base_pos, part.base) < 0) {
+	if (base_pos < part.base) {
 		test_group("high LBA positions, part one", FALSE);
 
 		return;
@@ -2464,7 +2464,7 @@ static void high_lba_pos1(void)
 
 	base_pos = sub64(base_pos, part.base);
 
-	sweep_and_check(base_pos, !cmp64u(part.base, 0));
+	sweep_and_check(base_pos, part.base != 0);
 }
 
 static void high_lba_pos2(void)
@@ -2479,7 +2479,7 @@ static void high_lba_pos2(void)
 	base_pos = mul64u(1L << 28, sector_size);
 
 	/* The partition end must exceed the 28-bit sector point. */
-	if (cmp64(part.base + part.size, base_pos) < 0) {
+	if (part.base + part.size < base_pos) {
 		test_group("high LBA positions, part two", FALSE);
 
 		return;
@@ -2488,7 +2488,7 @@ static void high_lba_pos2(void)
 	base_pos = sub64u(base_pos, sector_size * 8);
 
 	/* The partition start must not. */
-	if (cmp64(base_pos, part.base) < 0) {
+	if (base_pos < part.base) {
 		test_group("high LBA positions, part two", FALSE);
 
 		return;
@@ -2498,7 +2498,7 @@ static void high_lba_pos2(void)
 
 	base_pos = sub64(base_pos, part.base);
 
-	sweep_and_check(base_pos, !cmp64u(part.base, 0));
+	sweep_and_check(base_pos, part.base != 0);
 }
 
 static void high_pos(void)

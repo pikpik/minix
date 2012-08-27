@@ -302,7 +302,7 @@ int cmp_ticks(const void *v1, const void *v2)
 			return -1;
 		if( p2blocked && !p1blocked)
 			return 1;
-	} else if((c=cmp64(p1->ticks, p2->ticks)) != 0)
+	} else if((c=p1->ticks != p2->ticks))
 		return -c;
 
 	/* Process slot number is a tie breaker. */
@@ -459,7 +459,7 @@ void print_procs(int maxlines,
 		nprocs++;
 	}
 
-	if (!cmp64u(total_ticks, 0))
+	if (total_ticks != 0)
 		return;
 
 	qsort(tick_procs, nprocs, sizeof(tick_procs[0]), cmp_ticks);

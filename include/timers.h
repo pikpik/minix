@@ -99,7 +99,7 @@ clock_t tmrs_settimer(timer_t **tmrs, timer_t *tp, clock_t exp_time,
 	_cum_spenttime = _cum_spenttime + _dt;			\
 	_cum_instances++;					\
 	_cum_dt = sub64(_endtime, _cum_starttime);		\
-	if(cmp64(_cum_dt, make64(0, 120)) > 0) {		\
+	if((u64_t)_cum_dt > make64(0, 120)) {			\
 		PRINT_STATS(_cum_spenttime, _cum_instances);	\
 		RESET_STATS(_starttime, _cum_instances, _cum_spenttime, _cum_starttime); 	\
 	} 							\

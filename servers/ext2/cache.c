@@ -170,7 +170,7 @@ struct buf *get_block(
   buf_hash[b] = bp;		/* add to hash list */
 
   if(dev == NO_DEV) {
-	if(vmcache && cmp64(yieldid, VM_BLOCKID_NONE) != 0) {
+	if(vmcache && yieldid != VM_BLOCKID_NONE) {
 		vm_yield_block_get_block(yieldid, VM_BLOCKID_NONE,
 			bp->bp, fs_block_size);
 	}

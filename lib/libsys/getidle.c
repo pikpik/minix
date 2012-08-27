@@ -70,7 +70,7 @@ double getidle(void)
 	idelta = sub64(idle2, idle);
 	tdelta = sub64(stop, start);
 
-	if (cmp64(idelta, tdelta) >= 0)
+	if (idelta >= tdelta)
 		return 100.0;
 
 	ifp = make_double(idelta);

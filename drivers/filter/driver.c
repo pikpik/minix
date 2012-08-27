@@ -78,7 +78,7 @@ static int driver_open(int which)
 		disk_size = part.size;
 		size_known = 1;
 		sectors = (unsigned long)(disk_size / SECTOR_SIZE);
-		if(cmp64(mul64u(sectors, SECTOR_SIZE), disk_size)) {
+		if(mul64u(sectors, SECTOR_SIZE) != (u64_t)disk_size) {
 			printf("Filter: partition too large\n");
 
 			return RET_REDO;
@@ -88,7 +88,7 @@ static int driver_open(int which)
 			print64(disk_size), sectors);
 #endif
 	} else {
-		if(cmp64(disk_size, part.size)) {
+		if((u64_t)disk_size != (u64_t)part.size) {
 			printf("Filter: partition size mismatch (%s != %s)\n",
 				print64(part.size), print64(disk_size));
 
@@ -953,7 +953,7 @@ int read_write(u64_t pos, char *bufa, char *bufb, size_t *sizep, int request)
 		 * report the driver for acting strangely!
 		 */
 		if (m1.BDEV_STATUS > (ssize_t) *sizep ||
-			cmp64(pos + m1.BDEV_STATUS, disk_size) < 0)
+			(u64_t)(pos + m1.BDEV_STATUS) < (u64_t)disk_size)
 			return bad_driver(DRIVER_MAIN, BD_PROTO, EFAULT);
 
 		/* Return the actual size. */
@@ -975,8 +975,8 @@ int read_write(u64_t pos, char *bufa, char *bufb, size_t *sizep, int request)
 
 			/* As above */
 			if (m2.BDEV_STATUS > (ssize_t) *sizep ||
-					cmp64(pos + m2.BDEV_STATUS,
-					disk_size) < 0)
+					(u64_t)(pos + m2.BDEV_STATUS) <
+					(u64_t)disk_size)
 				return bad_driver(DRIVER_BACKUP, BD_PROTO,
 					EFAULT);
 

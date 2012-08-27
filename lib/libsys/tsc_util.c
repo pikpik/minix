@@ -73,7 +73,7 @@ micro_delay(u32_t micros)
 		tickdelay(micros*Hz/MICROHZ);
 
 	/* Wait (the rest) of the delay time using busywait. */
-	while(cmp64(now, end) < 0)
+	while(now < end)
 		read_tsc_64(&now);
 
 	return OK;

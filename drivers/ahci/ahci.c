@@ -1140,7 +1140,7 @@ static ssize_t port_transfer(struct port_state *ps, u64_t pos, u64_t eof,
 	 * extend beyond the end of the partition. The caller already
 	 * guarantees that the starting position lies within the partition.
 	 */
-	if (cmp64(pos + size, eof) >= 0)
+	if ((pos + size) >= eof)
 		size = (vir_bytes) (unsigned) (eof - pos);
 
 	start_lba = pos / ps->sector_size;
@@ -2529,7 +2529,7 @@ static ssize_t ahci_transfer(dev_t minor, int do_write, u64_t position,
 	 * the request is outside the partition, return success immediately.
 	 * The size of the request is obtained, and possibly reduced, later.
 	 */
-	if (cmp64(position, dv->dv_size) >= 0)
+	if (position >= dv->dv_size)
 		return OK;
 
 	pos = dv->dv_base + position;

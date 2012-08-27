@@ -89,6 +89,19 @@ static u64_t getargval(int index, int *done)
 	return make64(0, 0);
 }
 
+static inline int bsr64(u64_t i)
+{
+	int index;
+	u64_t mask;
+
+	for (index = 63, mask = 1ULL << 63; index >= 0; --index, mask >>= 1) {
+		if (i & mask)
+			return mask;
+	}
+
+	return -1;
+}
+
 static void handler_SIGFPE(int signum)
 {
 	assert(signum == SIGFPE);
@@ -120,38 +133,38 @@ static void testmul(void)
 		
 	/* compute maximum index of highest-order bit */
 	prodbits = bsr64(i) + bsr64(j) + 1;
-	if (cmp64u(i, 0) == 0 || cmp64u(j, 0) == 0) prodbits = -1;
+	if (i == 0 || j == 0) prodbits = -1;
 	if (bsr64(prod) > prodbits) ERR;
 
 	/* compare to 32-bit multiplication if possible */	
 	if ((unsigned long)(i>>32) == 0 &&
 	    (unsigned long)(j>>32) == 0) {
-		if (cmp64(prod, mul64u(ilo, jlo)) != 0) ERR;
+		if (prod != mul64u(ilo, jlo)) ERR;
 		
 		/* if there is no overflow we can check against pure 32-bit */
-		if (prodbits < 32 && cmp64u(prod, ilo * jlo) != 0) ERR;
+		if (prodbits < 32 && prod != ilo * jlo) ERR;
 	}
 
 	/* in 32-bit arith low-order DWORD matches regardless of overflow */
 	if ((unsigned long)prod != ilo * jlo) ERR;
 
 	/* multiplication by zero yields zero */
-	if (prodbits < 0 && cmp64u(prod, 0) != 0) ERR;
+	if (prodbits < 0 && prod != 0) ERR;
 
 	/* if there is no overflow, check absence of zero divisors */
-	if (prodbits >= 0 && prodbits < 64 && cmp64u(prod, 0) == 0) ERR;
+	if (prodbits >= 0 && prodbits < 64 && prod == 0) ERR;
 
 	/* commutativity */
-	if (cmp64(prod, mul64(j, i)) != 0) ERR;
+	if (prod != mul64(j, i)) ERR;
 
 	/* loop though all argument value combinations for third argument */
 	for (kdone = 0, kidx = 0; k = getargval(kidx, &kdone), !kdone; kidx++) {
 		/* associativity */
-		if (cmp64(mul64(mul64(i, j), k), mul64(i, mul64(j, k))) != 0) ERR;
+		if (mul64(mul64(i, j), k) != mul64(i, mul64(j, k))) ERR;
 
 		/* left and right distributivity */
-		if (cmp64(mul64(i + j, k), mul64(i, k) + mul64(j, k)) != 0) ERR;
-		if (cmp64(mul64(i, j + k), mul64(i, j) + mul64(i, k)) != 0) ERR;
+		if (mul64(i + j, k) != mul64(i, k) + mul64(j, k)) ERR;
+		if (mul64(i, j + k) != mul64(i, j) + mul64(i, k)) ERR;
 	}
 }
 
@@ -159,7 +172,7 @@ static void testdiv0(void)
 {
 	int funcidx;
 
-	assert(cmp64u(j, 0) == 0);
+	assert(j == 0);
 
 	/* loop through the 5 different division functions */
 	for (funcidx = 0; funcidx < 5; funcidx++) {
@@ -202,7 +215,7 @@ static void testdiv(void)
 #endif
 
 	/* division by zero has a separate test */
-	if (cmp64u(j, 0) == 0) {
+	if (j == 0) {
 		testdiv0();
 		return;
 	}
@@ -229,29 +242,29 @@ static void testdiv(void)
 
 	/* compare to 64/32-bit division if possible */
 	if (!(unsigned long)(j>>32)) {
-		if (cmp64(q, i / (unsigned long)j) != 0) ERR;
+		if (q != i / (unsigned long)j) ERR;
 		if (!(unsigned long)(q>>32)) {
-			if (cmp64u(q,
-			    (unsigned long)(i / (unsigned long)j)) != 0)
+			if (q !=
+			    (unsigned long)(i / (unsigned long)j))
 				ERR;
 		}
-		if (cmp64u(r, (unsigned)(i % (unsigned long)j)) != 0)
+		if (r != (unsigned)(i % (unsigned long)j))
 			ERR;
 
 		/* compare to 32-bit division if possible */
 		if (!(unsigned long)(i>>32)) {
-			if (cmp64u(q,
-			    (unsigned long)i / (unsigned long)j) != 0)
+			if (q !=
+			    (unsigned long)i / (unsigned long)j)
 				ERR;
-			if (cmp64u(r,
-			    (unsigned long)i % (unsigned long)j) != 0)
+			if (r !=
+			    (unsigned long)i % (unsigned long)j)
 				ERR;
 		}
 	}
 
 	/* check results using i = q j + r and r < j */
-	if (cmp64(i, mul64(q, j) + r) != 0) ERR;
-	if (cmp64(r, j) >= 0) ERR;
+	if (i != mul64(q, j) + r) ERR;
+	if (r >= j) ERR;
 }
 
 static void test(void)

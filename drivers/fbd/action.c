@@ -46,9 +46,9 @@ static size_t get_range(struct fbd_rule *rule, u64_t pos, size_t *size,
 	size_t off;
 	int to_eof;
 
-	to_eof = cmp64(rule->start, rule->end) >= 0;
+	to_eof = rule->start >= rule->end;
 
-	if (cmp64(pos, rule->start) > 0) {
+	if (pos > rule->start) {
 		if (skip != NULL) *skip = sub64(pos, rule->start);
 
 		off = 0;
@@ -64,11 +64,11 @@ static size_t get_range(struct fbd_rule *rule, u64_t pos, size_t *size,
 	}
 
 	if (!to_eof) {
-		assert(cmp64(pos, rule->end) < 0);
+		assert(pos < rule->end);
 
 		delta = sub64(rule->end, pos);
 
-		if (cmp64u(delta, *size) < 0)
+		if (delta < (unsigned)*size)
 			*size = (unsigned long)delta;
 	}
 

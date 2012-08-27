@@ -180,7 +180,7 @@ int read_write(int rw_flag, struct filp *f, char *buf, size_t size,
   /* On write, update file size and access time. */
   if (rw_flag == WRITING) {
 	if (S_ISREG(vp->v_mode) || S_ISDIR(vp->v_mode)) {
-		if (cmp64ul(position, vp->v_size) > 0) {
+		if (position > vp->v_size) {
 			if ((unsigned long)(position>>32) != 0) {
 				panic("read_write: file size too big ");
 			}
@@ -270,11 +270,11 @@ size_t req_size;
 
   /* Truncate read request at size. */
   if((rw_flag == READING) &&
-	cmp64ul(position + size, vp->v_size) > 0) {
+	position + size > vp->v_size) {
 	/* Position always should fit in an off_t (LONG_MAX). */
 	off_t pos32;
 
-	assert(cmp64ul(position, LONG_MAX) <= 0);
+	assert(position <= LONG_MAX);
 	pos32 = cv64ul(position);
 	assert(pos32 >= 0);
 	assert(pos32 <= LONG_MAX);
@@ -299,14 +299,14 @@ size_t req_size;
 
   /* On write, update file size and access time. */
   if (rw_flag == WRITING) {
-	if (cmp64ul(position, vp->v_size) > 0) {
+	if (position > vp->v_size) {
 		if ((unsigned long)(position>>32) != 0) {
 			panic("read_write: file size too big for v_size");
 		}
 		vp->v_size = (unsigned long)position;
 	}
   } else {
-	if (cmp64ul(position, vp->v_size) >= 0) {
+	if (position >= vp->v_size) {
 		/* Reset pipe pointers */
 		vp->v_size = 0;
 		vp->v_pipe_rd_pos= 0;

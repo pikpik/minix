@@ -760,7 +760,7 @@ int yielded_block_cmp(struct block_id *id1, struct block_id *id2)
 		return -1;
 	if(id1->owner > id2->owner)
 		return 1;
-	return cmp64(id1->id, id2->id);
+	return (id1->id != id2->id);
 }
 
 
@@ -2720,12 +2720,12 @@ int do_yieldblockgetblock(message *m)
 	yieldid = make64(m->VMYBGB_YIELDIDLO, m->VMYBGB_YIELDIDHI);
 	getid = make64(m->VMYBGB_GETIDLO, m->VMYBGB_GETIDHI);
 
-	if(cmp64(yieldid, VM_BLOCKID_NONE) != 0) {
+	if(yieldid != VM_BLOCKID_NONE) {
 		/* A block was given to yield. */
 		yieldblock(vmp, yieldid, (vir_bytes) m->VMYBGB_VADDR, len, &yb);
 	}
 
-	if(cmp64(getid, VM_BLOCKID_NONE) != 0) {
+	if(getid != VM_BLOCKID_NONE) {
 		/* A block was given to get. */
 		r = getblock(vmp, getid, (vir_bytes) m->VMYBGB_VADDR, len);
 	}

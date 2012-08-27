@@ -586,7 +586,7 @@ static int m_block_ioctl(dev_t minor, unsigned int request, endpoint_t endpt,
 	sizeof(ramdev_size));
   if (s != OK)
 	return s;
-  if(m_vaddrs[minor] && !cmp64(dv->dv_size, ramdev_size)) {
+  if(m_vaddrs[minor] && (u64_t)dv->dv_size != (u64_t)ramdev_size) {
 	return(OK);
   }
   /* openct is 1 for the ioctl(). */

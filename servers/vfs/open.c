@@ -656,7 +656,7 @@ int do_lseek()
 	/* insert the new position into the output message */
 	m_out.reply_l1 = (unsigned long)newpos;
 
-	if (cmp64(newpos, rfilp->filp_pos) != 0) {
+	if (newpos != rfilp->filp_pos) {
 		/* Inhibit read ahead request */
 		r = req_inhibread(rfilp->filp_vno->v_fs_e,
 				  rfilp->filp_vno->v_inode_nr);
@@ -703,9 +703,9 @@ int do_llseek()
   newpos = pos + make64(off_lo, off_hi);
 
   /* Check for overflow. */
-  if ((off_hi > 0) && cmp64(newpos, pos) < 0)
+  if ((off_hi > 0) && newpos < pos)
       r = EINVAL;
-  else if ((off_hi < 0) && cmp64(newpos, pos) > 0)
+  else if ((off_hi < 0) && newpos > pos)
       r = EINVAL;
   else {
 	rfilp->filp_pos = newpos;
@@ -714,7 +714,7 @@ int do_llseek()
 	m_out.reply_l1 = (unsigned long)newpos;
 	m_out.reply_l2 = (unsigned long)(newpos>>32);
 
-	if (cmp64(newpos, rfilp->filp_pos) != 0) {
+	if (newpos != rfilp->filp_pos) {
 		/* Inhibit read ahead request */
 		r = req_inhibread(rfilp->filp_vno->v_fs_e,
 				  rfilp->filp_vno->v_inode_nr);

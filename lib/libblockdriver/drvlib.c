@@ -72,7 +72,7 @@ u8_t *tmp_buf;			/* temporary buffer */
 
   /* Get the geometry of the device to partition */
   if ((dv = (*bdp->bdr_part)(device)) == NULL
-				|| cmp64u(dv->dv_size, 0) == 0) return;
+				|| dv->dv_size == 0) return;
   base = (unsigned long)(dv->dv_base / SECTOR_SIZE);
   limit = base + (unsigned long)(dv->dv_size / SECTOR_SIZE);
 
