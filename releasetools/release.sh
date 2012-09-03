@@ -394,7 +394,7 @@ if [ "$USB" -ne 0 ]; then
 	mv $bootimage $IMG
 else
 	cp $RELEASEDIR/usr/mdec/boot_monitor $CDFILES/boot
-	cp -rf $RELEASEDIR/boot/minix_latest/* $CDFILES/
+	cp -rf $RELEASEDIR/boot/latest/* $CDFILES/
 	gzip -d $CDFILES/*gz
 	writeisofs -s0x0 -l MINIX -B $bootimage $boottype $CDFILES $IMG || exit 1
 

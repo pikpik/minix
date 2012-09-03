@@ -400,27 +400,27 @@ then
 		cp -pf /etc/boot.cfg.default /mnt/etc/ && \
 		cp -pf /boot_monitor /mnt/ || exit
 
-	if [ ! -d /mnt/boot/minix_default -o ! -r /mnt/boot/minix_default/kernel ]
+	if [ ! -d /mnt/boot/release -o ! -r /mnt/boot/release/kernel ]
 	then
 		if [ -r /mnt/boot.cfg ]
 		then
 			echo ""
-			echo "There is no /boot/minix_default/, but /boot.cfg exists."
-			echo -n "Do you want to copy minix_default from CD? [Y/n] "
+			echo "There is no /boot/release/, but /boot.cfg exists."
+			echo -n "Do you want to copy \"release\" from CD? [Y/n] "
 		else
 			echo ""
-			echo -n "There is no /boot/minix_default/, do you want to copy it from CD? [Y/n] "
+			echo -n "There is no /boot/release/, do you want to copy it from CD? [Y/n] "
 		fi
 		read ok
 		if [ "$ok" = "y" -o "$ok" = "Y" -o "$ok" = "" ]
 		then
-			if [ -e /mnt/boot/minix_default ]
+			if [ -e /mnt/boot/release ]
 			then
-				echo "Old /boot/minix_default moved to /boot/minix_default_old"
-				mv /mnt/boot/minix_default /mnt/boot/minix_default_old
+				echo "Old /boot/release moved to /boot/release_old"
+				mv /mnt/boot/release /mnt/boot/release_old
 			fi
 
-			cp -rfp /boot/minix_default /mnt/boot/ || exit
+			cp -rfp /boot/release /mnt/boot/ || exit
 		fi
 	fi
 

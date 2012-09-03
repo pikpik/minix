@@ -103,12 +103,12 @@ hdboot)
 	rotate_oldest "$rootdir/boot/minix"
 
 	# rotate system processes. We assume latest ones are in
-	# /boot/modules/.temp and we maintain /boot/modules/ by ourselves.
+	# /boot/minix/.temp and we maintain /boot/minix/ by ourselves.
 	[ -d /boot/minix/.temp ] || exit 1
 	rm -rf /boot/minix/"$target"/
 	mv /boot/minix/.temp /boot/minix/"$target"
-	rm -f /boot/minix_latest
-	ln -s minix/"$target" /boot/minix_latest 
+	rm -f /boot/latest
+	ln -s minix/"$target" /boot/latest 
 
 	# Save the revision number.
 	test "$revision" != "$oldrev" && echo $revision >revision

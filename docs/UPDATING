@@ -1,3 +1,23 @@
+20120908:
+	The boot directories have been renamed.
+	To update, please follow these steps.
+
+	1. Update boot contents
+
+	# cd /boot
+	# mv minix_default release
+	# rm minix_latest
+	# cp /usr/src/etc/boot.cfg.default /etc
+
+	2. Rebuild your system
+
+	# cd /usr/src
+	# make clean world
+
+	3. Test the changes
+
+	# reboot
+
 20120703:
 	The device manager(devman) is now started automatically during the 
 	mount -a operation.  As fstab is generated during installation it is 

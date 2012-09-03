@@ -105,7 +105,7 @@ hdemu_root_changes()
 		$RELEASEDIR/usr/mdec/bootxx_minixfs3
 
 cat >$RELEASEMNTDIR/boot.cfg <<END_BOOT_CFG
-menu=Regular MINIX 3:load_mods /boot/minix_default/mod*;multiboot /boot/minix_default/kernel bootcd=2 disable=inet bios_wini=yes bios_remap_first=1 ramimagedev=c0d7p0s0
+menu=Regular MINIX 3:load_mods /boot/release/mod*;multiboot /boot/release/kernel bootcd=2 disable=inet bios_wini=yes bios_remap_first=1 ramimagedev=c0d7p0s0
 menu=Drop to boot prompt:prompt
 clear=1
 timeout=10
@@ -119,7 +119,7 @@ usb_root_changes()
 		$RELEASEDIR/usr/mdec/bootxx_minixfs3
 	echo \
 cat >$RELEASEMNTDIR/boot.cfg <<END_BOOT_CFG
-menu=Regular MINIX 3:load_mods /boot/minix_default/mod*;multiboot /boot/minix_default/kernel bios_wini=yes bios_remap_first=1 rootdevname=c0d7p0s0
+menu=Regular MINIX 3:load_mods /boot/release/mod*;multiboot /boot/release/kernel bios_wini=yes bios_remap_first=1 rootdevname=c0d7p0s0
 menu=Drop to boot prompt:prompt
 clear=1
 timeout=10

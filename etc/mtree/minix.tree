@@ -2,7 +2,7 @@
 755  root   operator /bin
 755  root   operator /boot
 755  root   operator /boot/minix
-755  root   operator /boot/minix_default
+755  root   operator /boot/release
 755  root   operator /dev
 /dev/mouse -> /dev/kbdaux
 755  root   operator /etc

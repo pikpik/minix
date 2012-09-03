@@ -43,9 +43,9 @@ then
 	echo "$default_cfg" | while read line; do eval echo \"$line\" | filter_missing_entries >> $TMP; done
 fi
 
-if [ -e /boot/minix_latest -a -d /boot/minix_latest -o -h /boot/minix_latest ]
+if [ -e /boot/latest -a -d /boot/latest -o -h /boot/latest ]
 then
-	latest=`basename \`stat -f "%Y" /boot/minix_latest\``
+	latest=`basename \`stat -f "%Y" /boot/latest\``
 fi
 
 [ -d $DIRSBASE ] && for i in `ls $DIRSBASE/`
