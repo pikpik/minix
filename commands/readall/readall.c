@@ -123,7 +123,7 @@ char *argv[];
   /* Read the entire file. Try it in large chunks, but if an error
    * occurs, go to single reads for a while. */
   while (1) {
-	if(lseek64(fd, mul64u(BLOCK_SIZE, b), SEEK_SET, NULL) < 0) {
+	if(lseek64(fd, (u64_t)BLOCK_SIZE * b, SEEK_SET, NULL) < 0) {
 		perror("lseek64");
 		return 1;
 	}

@@ -60,7 +60,6 @@ maybedefine O_RDONLY 4		/* O_RDONLY | BINARY_BIT */
 #endif
 
 #if !defined(__minix)
-#define mul64u(a,b)	((a) * (b))
 #define lseek64(a,b,c,d) lseek(a,b,c)
 #ifdef __linux__
 #include <mntent.h>
@@ -277,7 +276,7 @@ char *argv[];
 	}
 	if (i == 0) {
 #if defined(_MINIX) || defined(__minix)
-		uint32_t kb = (unsigned long)(mul64u(blocks, block_size)
+		uint32_t kb = (unsigned long)((blocks * block_size)
 				/ 1024);
 #else
 		uint32_t kb = ((unsigned long long) blocks * block_size) / 1024;
@@ -328,7 +327,7 @@ char *argv[];
 	testb = (short *) alloc_block();
 
 	/* Try writing the last block of partition or diskette. */
-	if(lseek64(fd, mul64u(blocks - 1, block_size), SEEK_SET, NULL) < 0) {
+	if(lseek64(fd, (blocks - 1) * block_size, SEEK_SET, NULL) < 0) {
 		pexit("couldn't seek to last block to test size (1)");
 	}
 	testb[0] = 0x3245;
@@ -340,7 +339,7 @@ char *argv[];
 		pexit("File system is too big for minor device (write)");
 	}
 	sync();			/* flush write, so if error next read fails */
-	if(lseek64(fd, mul64u(blocks - 1, block_size), SEEK_SET, NULL) < 0) {
+	if(lseek64(fd, (blocks - 1) * block_size, SEEK_SET, NULL) < 0) {
 		pexit("couldn't seek to last block to test size (2)");
 	}
 	testb[0] = 0;
@@ -353,7 +352,7 @@ printf("nread = %d\n", nread);
 printf("testb = 0x%x 0x%x 0x%x\n", testb[0], testb[1], testb[block_size-1]);
 		pexit("File system is too big for minor device (read)");
 	}
-	lseek64(fd, mul64u(blocks - 1, block_size), SEEK_SET, NULL);
+	lseek64(fd, (blocks - 1) * block_size, SEEK_SET, NULL);
 	testb[0] = 0;
 	testb[1] = 0;
 	if (write(fd, (char *) testb, block_size) != block_size)
@@ -416,7 +415,7 @@ char *device;
   d = (unsigned long)(bytes / block_size);
   rem = (unsigned)(bytes % block_size);
 
-  resize = mul64u(d, block_size) + rem;
+  resize = (d * block_size) + rem;
   if(resize != bytes) {
 	d = ULONG_MAX;
 	fprintf(stderr, "mkfs: truncating FS at %u blocks\n", d);
@@ -1666,7 +1665,7 @@ char *buf;
 	copy(zero, buf, block_size);
 	return;
   }
-  lseek64(fd, mul64u(n, block_size), SEEK_SET, NULL);
+  lseek64(fd, n * block_size, SEEK_SET, NULL);
   k = read(fd, buf, block_size);
   if (k != block_size) {
 	pexit("get_block couldn't read");
@@ -1699,7 +1698,7 @@ char *buf;
   (void) read_and_set(n);
 
   /* XXX - check other lseeks too. */
-  if (lseek64(fd, mul64u(n, block_size), SEEK_SET, NULL) == (off_t) -1) {
+  if (lseek64(fd, n * block_size, SEEK_SET, NULL) == (off_t) -1) {
 	pexit("put_block couldn't seek");
   }
   if (write(fd, buf, block_size) != block_size) {

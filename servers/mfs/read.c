@@ -158,8 +158,8 @@ int fs_breadwrite(void)
   /* Get the values from the request message */ 
   rw_flag = (fs_m_in.m_type == REQ_BREAD ? READING : WRITING);
   gid = (cp_grant_id_t) fs_m_in.REQ_GRANT;
-  position = make64((unsigned long) fs_m_in.REQ_SEEK_POS_LO,
-  		    (unsigned long) fs_m_in.REQ_SEEK_POS_HI);
+  position = (u64_t)fs_m_in.REQ_SEEK_POS_HI << 32
+	   | (u64_t)fs_m_in.REQ_SEEK_POS_LO;
   nrbytes = (size_t) fs_m_in.REQ_NBYTES;
   
   block_size = get_block_size(target_dev);
@@ -476,7 +476,7 @@ unsigned bytes_ahead;		/* bytes beyond position for immediate use */
    */
 
   fragment = (unsigned)(position % block_size);
-  position = sub64u(position, fragment);
+  position = position - fragment;
   bytes_ahead += fragment;
 
   blocks_ahead = (bytes_ahead + block_size - 1) / block_size;

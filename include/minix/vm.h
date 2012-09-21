@@ -31,7 +31,7 @@ int vm_yield_block_get_block(u64_t yieldid, u64_t getid, void *mem,
 /* Invalid ID with special meaning for the vm_yield_block_get_block
  * interface.
  */
-#define VM_BLOCKID_NONE make64(ULONG_MAX, ULONG_MAX)
+#define VM_BLOCKID_NONE ((u64_t)ULONG_MAX << 32) | (u64_t)ULONG_MAX
 
 /* VM kernel request types. */
 #define VMPTYPE_NONE		0

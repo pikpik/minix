@@ -270,8 +270,8 @@ int main(int argc, char **argv)
 			pe->size= part_limit - pe->lowsec;
 		}
 
-		entry.base= mul64u(pe->lowsec, SECTOR_SIZE);
-		entry.size= mul64u(pe->size, SECTOR_SIZE);
+		entry.base = (u64_t)pe->lowsec * SECTOR_SIZE;
+		entry.size= (u64_t)pe->size * SECTOR_SIZE;
 		if (diocntl(makedev(hd_major, device), DSETP, &entry) < 0)
 			fatal(dev_file);
 

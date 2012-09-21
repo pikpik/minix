@@ -18,6 +18,6 @@ u64_t *newpos;
   m.m2_i2 = whence;
   if (_syscall(VFS_PROC_NR, LLSEEK, &m) < 0) return -1;
   if (newpos)
-	*newpos= make64(m.m2_l1, m.m2_l2);
+	*newpos = (u64_t)m.m2_l2 << 32 | (u64_t)m.m2_l1;
   return 0;
 }

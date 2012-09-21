@@ -248,11 +248,11 @@ static int m_transfer(
   if (m_device != ZERO_DEV && m_device != NULL_DEV &&
       (unsigned long)(pos64>>32) != 0)
 	return OK;	/* Beyond EOF */
-  position= cv64ul(pos64);
+  position= (pos64>>32) ? ULONG_MAX : (unsigned long)pos64;
 
   /* Get minor device number and check for /dev/null. */
   dv = &m_geom[m_device];
-  dv_size = cv64ul(dv->dv_size);
+  dv_size = (dv->dv_size>>32) ? ULONG_MAX : (unsigned long)dv->dv_size;
   dev_vaddr = m_vaddrs[m_device];
 
   while (nr_req > 0) {
@@ -459,12 +459,12 @@ static int m_block_transfer(
 
   /* Get minor device information. */
   if ((dv = m_block_part(minor)) == NULL) return(ENXIO);
-  dv_size = cv64ul(dv->dv_size);
+  dv_size = (dv->dv_size>>32) ? ULONG_MAX : (unsigned long)dv->dv_size;
   dev_vaddr = m_vaddrs[minor];
 
   if ((unsigned long)(pos64>>32) != 0)
 	return OK;	/* Beyond EOF */
-  position= cv64ul(pos64);
+  position = (pos64>>32) ? ULONG_MAX : (unsigned long)pos64;
 
   while (nr_req > 0) {
 

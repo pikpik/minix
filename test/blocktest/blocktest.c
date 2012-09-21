@@ -1227,8 +1227,8 @@ static void read_limits(dev_t sub0_minor, dev_t sub1_minor, size_t sub_size)
 	got_result(&res, "single sector read beyond partition end");
 
 	/* Read three sectors way beyond the partition end. */
-	simple_xfer(sub0_minor, make64(0L, 0x10000000L), buf_ptr,
-		buf_size, FALSE, 0, &res);
+	simple_xfer(sub0_minor, ((u64_t)0x10000000L << 32 | (u64_t)0L),
+		buf_ptr, buf_size, FALSE, 0, &res);
 
 	test_sum(buf_ptr, buf_size, sum, TRUE, &res);
 
@@ -1239,8 +1239,9 @@ static void read_limits(dev_t sub0_minor, dev_t sub1_minor, size_t sub_size)
 	 * more or less a bad requests test, but we cannot do it without
 	 * setting up subpartitions first.
 	 */
-	simple_xfer(sub1_minor, make64(0xffffffffL - sector_size + 1,
-		0xffffffffL), buf_ptr, sector_size, FALSE, 0, &res);
+	simple_xfer(sub1_minor, ((u64_t)0xffffffffL << 32
+		| (u64_t)(0xffffffffL - sector_size + 1)),
+		buf_ptr, sector_size, FALSE, 0, &res);
 
 	test_sum(buf_ptr, sector_size, sum2, TRUE, &res);
 
@@ -1373,8 +1374,9 @@ static void write_limits(dev_t sub0_minor, dev_t sub1_minor, size_t sub_size)
 	/* Test offset wrapping, but this time for writes. */
 	fill_rand(buf_ptr, sector_size);
 
-	simple_xfer(sub1_minor, make64(0xffffffffL - sector_size + 1,
-		0xffffffffL), buf_ptr, sector_size, TRUE, 0, &res);
+	simple_xfer(sub1_minor, ((u64_t)0xffffffffL << 32
+		| (u64_t)0xffffffffL - sector_size + 1,),
+		buf_ptr, sector_size, TRUE, 0, &res);
 
 	got_result(&res, "write with negative offset");
 
@@ -2372,8 +2374,8 @@ static void high_disk_pos(void)
 	 */
 	u64_t base_pos;
 
-	base_pos = make64(sector_size * 4, 1L);
-	base_pos = sub64u(base_pos, (unsigned)(base_pos % sector_size));
+	base_pos = (u64_t)1L << 32 | (u64_t)(sector_size * 4);
+	base_pos = base_pos - (unsigned)(base_pos % sector_size);
 
 	/* The partition end must exceed 32 bits. */
 	if (part.base + part.size < base_pos) {
@@ -2382,7 +2384,7 @@ static void high_disk_pos(void)
 		return;
 	}
 
-	base_pos = sub64u(base_pos, sector_size * 8);
+	base_pos = base_pos - (sector_size * 8);
 
 	/* The partition start must not. */
 	if (base_pos < part.base) {
@@ -2392,7 +2394,7 @@ static void high_disk_pos(void)
 
 	test_group("high disk positions", TRUE);
 
-	base_pos = sub64(base_pos, part.base);
+	base_pos = base_pos - part.base;
 
 	sweep_and_check(base_pos, part.base != 0);
 }
@@ -2414,8 +2416,8 @@ static void high_part_pos(void)
 		return;
 	}
 
-	base_pos = make64(sector_size * 4, 1L);
-	base_pos = sub64u(base_pos, (unsigned)(base_pos % sector_size));
+	base_pos = (u64_t)1L << 32 | (u64_t)(sector_size * 4);
+	base_pos = base_pos - (unsigned)(base_pos % sector_size);
 
 	if (part.size < base_pos) {
 		test_group("high partition positions", FALSE);
@@ -2425,7 +2427,7 @@ static void high_part_pos(void)
 
 	test_group("high partition positions", TRUE);
 
-	base_pos = sub64u(base_pos, sector_size * 8);
+	base_pos = base_pos - (sector_size * 8);
 
 	sweep_and_check(base_pos, TRUE);
 }
@@ -2442,7 +2444,7 @@ static void high_lba_pos1(void)
 	 */
 	u64_t base_pos;
 
-	base_pos = mul64u(1L << 24, sector_size);
+	base_pos = (u64_t)(1L << 24) * sector_size;
 
 	/* The partition end must exceed the 24-bit sector point. */
 	if (part.base + part.size < base_pos) {
@@ -2451,7 +2453,7 @@ static void high_lba_pos1(void)
 		return;
 	}
 
-	base_pos = sub64u(base_pos, sector_size * 8);
+	base_pos = base_pos - (sector_size * 8);
 
 	/* The partition start must not. */
 	if (base_pos < part.base) {
@@ -2462,7 +2464,7 @@ static void high_lba_pos1(void)
 
 	test_group("high LBA positions, part one", TRUE);
 
-	base_pos = sub64(base_pos, part.base);
+	base_pos = base_pos - part.base;
 
 	sweep_and_check(base_pos, part.base != 0);
 }
@@ -2476,7 +2478,7 @@ static void high_lba_pos2(void)
 	 */
 	u64_t base_pos;
 
-	base_pos = mul64u(1L << 28, sector_size);
+	base_pos = (u64_t)(1L << 28) * sector_size;
 
 	/* The partition end must exceed the 28-bit sector point. */
 	if (part.base + part.size < base_pos) {
@@ -2485,7 +2487,7 @@ static void high_lba_pos2(void)
 		return;
 	}
 
-	base_pos = sub64u(base_pos, sector_size * 8);
+	base_pos = base_pos - (sector_size * 8);
 
 	/* The partition start must not. */
 	if (base_pos < part.base) {
@@ -2496,7 +2498,7 @@ static void high_lba_pos2(void)
 
 	test_group("high LBA positions, part two", TRUE);
 
-	base_pos = sub64(base_pos, part.base);
+	base_pos = base_pos - part.base;
 
 	sweep_and_check(base_pos, part.base != 0);
 }

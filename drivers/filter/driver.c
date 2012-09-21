@@ -78,7 +78,7 @@ static int driver_open(int which)
 		disk_size = part.size;
 		size_known = 1;
 		sectors = (unsigned long)(disk_size / SECTOR_SIZE);
-		if(mul64u(sectors, SECTOR_SIZE) != (u64_t)disk_size) {
+		if(((u64_t)sectors * SECTOR_SIZE) != (u64_t)disk_size) {
 			printf("Filter: partition too large\n");
 
 			return RET_REDO;

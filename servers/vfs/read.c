@@ -275,7 +275,7 @@ size_t req_size;
 	off_t pos32;
 
 	assert(position <= LONG_MAX);
-	pos32 = cv64ul(position);
+	pos32 = (position>>32) ? ULONG_MAX : (unsigned long)position;
 	assert(pos32 >= 0);
 	assert(pos32 <= LONG_MAX);
 	size = vp->v_size - pos32;
@@ -316,9 +316,11 @@ size_t req_size;
   }
 
   if (rw_flag == READING)
-	vp->v_pipe_rd_pos= cv64ul(position);
+	vp->v_pipe_rd_pos = (position>>32) ? ULONG_MAX
+	                                   : (unsigned long) position;
   else
-	vp->v_pipe_wr_pos= cv64ul(position);
+	vp->v_pipe_wr_pos = (position>>32) ? ULONG_MAX
+	                                   : (unsigned long) position;
 
   if (r == OK) {
 	if (partial_pipe) {

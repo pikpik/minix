@@ -193,7 +193,9 @@ char *argv[];
 		if (ioctl(fd, DIOCGETP, &part) < 0) {
 			autovolsize = 0;
 		} else {
-			volume_size = cv64ul(part.size);
+			volume_size = (part.size>>32)
+				    ? ULONG_MAX
+				    : (unsigned)part.size;
 		}
 	}
 

@@ -550,7 +550,7 @@ char ename[NAME_MAX + 1];
   char buf[(sizeof(struct dirent) + NAME_MAX) * 8];
   struct dirent *cur;
 
-  pos = make64(0, 0);
+  pos = 0;
 
   if (!S_ISDIR(dirp->v_mode)) return(EBADF);
 

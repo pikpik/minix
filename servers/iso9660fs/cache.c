@@ -97,7 +97,7 @@ register struct buf *bp;	/* buffer pointer */
 					    * the superblock */
 
 
-  pos = mul64u(bp->b_blocknr, block_size); /* get absolute position */
+  pos = (u64_t)bp->b_blocknr * block_size; /* get absolute position */
   r = bdev_read(fs_dev, pos, bp->b_data, block_size, BDEV_NOFLAGS);
   if (r != (ssize_t) block_size) {
     if (r == OK) r = END_OF_FILE;

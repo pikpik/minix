@@ -49,14 +49,14 @@ static size_t get_range(struct fbd_rule *rule, u64_t pos, size_t *size,
 	to_eof = rule->start >= rule->end;
 
 	if (pos > rule->start) {
-		if (skip != NULL) *skip = sub64(pos, rule->start);
+		if (skip != NULL) *skip = pos - rule->start;
 
 		off = 0;
 	}
 	else {
 		if (skip != NULL) *skip = 0;
 
-		delta = sub64(rule->start, pos);
+		delta = rule->start - pos;
 
 		assert((unsigned long)(delta>>32) == 0);
 
@@ -66,7 +66,7 @@ static size_t get_range(struct fbd_rule *rule, u64_t pos, size_t *size,
 	if (!to_eof) {
 		assert(pos < rule->end);
 
-		delta = sub64(rule->end, pos);
+		delta = rule->end - pos;
 
 		if (delta < (unsigned)*size)
 			*size = (unsigned long)delta;
@@ -186,8 +186,8 @@ static void action_pre_misdir(struct fbd_rule *rule, iovec_t *UNUSED(iov),
 	 * here, because we have no idea about the actual disk size, and the
 	 * resulting address must of course be valid..
 	 */
-	range = (unsigned long)(sub64(rule->params.misdir.end,
-		rule->params.misdir.start) + 1
+	range = (unsigned long)((rule->params.misdir.end
+		- rule->params.misdir.start) + 1
 		/ rule->params.misdir.align);
 
 	if (range > 0)
@@ -196,7 +196,7 @@ static void action_pre_misdir(struct fbd_rule *rule, iovec_t *UNUSED(iov),
 		choice = 0;
 
 	*pos = rule->params.misdir.start +
-		mul64u(choice, rule->params.misdir.align);
+		((u64_t)choice * rule->params.misdir.align);
 }
 
 /*===========================================================================*

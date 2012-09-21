@@ -36,7 +36,7 @@ int do_read()
   if ((r = get_handle(ino)) != OK)
 	return r;
 
-  pos = make64(m_in.REQ_SEEK_POS_LO, m_in.REQ_SEEK_POS_HI);
+  pos = (u64_t)m_in.REQ_SEEK_POS_HI << 32 | (u64_t)m_in.REQ_SEEK_POS_LO;
   count = m_in.REQ_NBYTES;
 
   assert(count > 0);

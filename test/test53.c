@@ -66,27 +66,30 @@ static u64_t getargval(int index, int *done)
 
 	/* values with corner case and random 32-bit components */
 	if (index < LENGTHOF(values) * LENGTHOF(values))
-		return make64(values[index / LENGTHOF(values)], values[index % LENGTHOF(values)]);
+		return ((u64_t)values[index % LENGTHOF(values)] << 32
+			| (u64_t)values[index / LENGTHOF(values)]);
 
 	index -= LENGTHOF(values) * LENGTHOF(values);
 
 	/* small numbers */
-	if (index < 16) return make64(index + 2, 0);
+	if (index < 16) return ((u64_t)0 << 32 | (u64_t)(index + 2));
 	index -= 16;
 
 	/* big numbers */
-	if (index < 16) return make64(-index - 2, -1);
+	if (index < 16) return ((u64_t)-1 << 32 | (u64_t)(-index - 2));
 	index -= 16;
 
 	/* powers of two */
-	if (index < 14) return make64(1 << (index * 2 + 5), 0);
+	if (index < 14) return ((u64_t)0 << 32
+				| (u64_t)(1 << (index * 2 + 5)));
 	index -= 14;
-	if (index < 16) return make64(0, 1 << (index * 2 + 1));
+	if (index < 16) return ((u64_t)(1 << (index * 2 + 1)) << 32
+				| (u64_t)0);
 	index -= 16;
 
 	/* done */
 	*done = 1;
-	return make64(0, 0);
+	return 0;
 }
 
 static inline int bsr64(u64_t i)
@@ -128,7 +131,7 @@ static void testmul(void)
 {
 	int kdone, kidx;
 	u32_t ilo = (unsigned long)i, jlo = (unsigned long)j;
-	u64_t prod = mul64(i, j);
+	u64_t prod = i * j;
 	int prodbits;
 		
 	/* compute maximum index of highest-order bit */
@@ -139,7 +142,7 @@ static void testmul(void)
 	/* compare to 32-bit multiplication if possible */	
 	if ((unsigned long)(i>>32) == 0 &&
 	    (unsigned long)(j>>32) == 0) {
-		if (prod != mul64u(ilo, jlo)) ERR;
+		if (prod != ((u64_t)ilo * jlo)) ERR;
 		
 		/* if there is no overflow we can check against pure 32-bit */
 		if (prodbits < 32 && prod != ilo * jlo) ERR;
@@ -155,16 +158,16 @@ static void testmul(void)
 	if (prodbits >= 0 && prodbits < 64 && prod == 0) ERR;
 
 	/* commutativity */
-	if (prod != mul64(j, i)) ERR;
+	if (prod != (j * i)) ERR;
 
 	/* loop though all argument value combinations for third argument */
 	for (kdone = 0, kidx = 0; k = getargval(kidx, &kdone), !kdone; kidx++) {
 		/* associativity */
-		if (mul64(mul64(i, j), k) != mul64(i, mul64(j, k))) ERR;
+		if (((i * j) * k) != (i * (j * k))) ERR;
 
 		/* left and right distributivity */
-		if (mul64(i + j, k) != mul64(i, k) + mul64(j, k)) ERR;
-		if (mul64(i, j + k) != mul64(i, j) + mul64(i, k)) ERR;
+		if (((i + j) * k) != (i * k) + (j * k)) ERR;
+		if ((i * (j + k)) != (i * j) + (i * k)) ERR;
 	}
 }
 
@@ -263,7 +266,7 @@ static void testdiv(void)
 	}
 
 	/* check results using i = q j + r and r < j */
-	if (i != mul64(q, j) + r) ERR;
+	if (i != (q * j) + r) ERR;
 	if (r >= j) ERR;
 }
 

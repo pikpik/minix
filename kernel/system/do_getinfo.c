@@ -25,7 +25,7 @@ static void update_idle_time(void)
 	int i;
 	struct proc * idl = proc_addr(IDLE);
 
-	idl->p_cycles = make64(0, 0);
+	idl->p_cycles = 0;
 
 	for (i = 0; i < CONFIG_MAX_CPUS ; i++) {
 		idl->p_cycles = idl->p_cycles +

@@ -21,7 +21,7 @@ struct sffs_attr *attr;
   size_lo = RPC_NEXT32;
   size_hi = RPC_NEXT32;
   if (attr->a_mask & SFFS_ATTR_SIZE)
-	attr->a_size = make64(size_lo, size_hi);
+	attr->a_size = (u64_t)size_hi << 32 | (u64_t)size_lo;
 
   time_get((attr->a_mask & SFFS_ATTR_CRTIME) ? &attr->a_crtime : NULL);
   time_get((attr->a_mask & SFFS_ATTR_ATIME) ? &attr->a_atime : NULL);

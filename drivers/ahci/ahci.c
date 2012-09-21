@@ -363,7 +363,7 @@ static int atapi_read_capacity(struct port_state *ps, int cmd)
 	dprintf(V_INFO,
 		("%s: medium detected (%u byte sectors, %lu MB size)\n",
 		ahci_portname(ps), ps->sector_size,
-		(usigned long)(mul64(ps->lba_count, ps->sector_size)
+		(usigned long)((ps->lba_count * ps->sector_size)
 			/ 1024*1024)));
 
 	return OK;
@@ -527,8 +527,10 @@ static int ata_id_check(struct port_state *ps, u16_t *buf)
 	}
 
 	/* Get number of LBA blocks, and sector size. */
-	ps->lba_count = make64((buf[ATA_ID_LBA1] << 16) | buf[ATA_ID_LBA0],
-			(buf[ATA_ID_LBA3] << 16) | buf[ATA_ID_LBA2]);
+	ps->lba_count = ((u64_t)((buf[ATA_ID_LBA3] << 16)
+	                         | buf[ATA_ID_LBA2]) << 32)
+	              | (u64_t)((buf[ATA_ID_LBA1] << 16)
+	                        | buf[ATA_ID_LBA0]);
 
 	/* Determine the queue depth of the device. */
 	if (hba_state.has_ncq &&
@@ -611,7 +613,7 @@ static int ata_transfer(struct port_state *ps, int cmd, u64_t start_lba,
 		}
 	}
 	fis.cf_lba = (unsigned long)start_lba & 0x00FFFFFFL;
-	fis.cf_lba_exp = (unsigned long)rshift64(start_lba, 24) & 0x00FFFFFFL;
+	fis.cf_lba_exp = (unsigned long)(start_lba >> 24) & 0x00FFFFFFL;
 	fis.cf_sec = count & 0xFF;
 	fis.cf_sec_exp = (count >> 8) & 0xFF;
 
@@ -1474,8 +1476,8 @@ static void port_id_check(struct port_state *ps, int success)
 		if (ps->flags & FLAG_HAS_MEDIUM)
 			printf(", %u byte sectors, %lu MB size",
 				ps->sector_size,
-				(unsigned long)(mul64(ps->lba_count,
-				ps->sector_size) / 1024*1024));
+				(unsigned long)((ps->lba_count
+				* ps->sector_size) / 1024*1024));
 
 		printf("\n");
 	}
@@ -2427,8 +2429,7 @@ static int ahci_open(dev_t minor, int access)
 		memset(ps->part, 0, sizeof(ps->part));
 		memset(ps->subpart, 0, sizeof(ps->subpart));
 
-		ps->part[0].dv_size =
-			mul64(ps->lba_count, ps->sector_size);
+		ps->part[0].dv_size = ps->lba_count * ps->sector_size;
 
 		partition(&ahci_dtab, ps->device * DEV_PER_DRIVE, P_PRIMARY,
 			!!(ps->flags & FLAG_ATAPI));

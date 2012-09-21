@@ -2675,7 +2675,7 @@ int do_forgetblock(message *m)
 		return EFAULT;
 	}
 
-	id = make64(m->VMFB_IDLO, m->VMFB_IDHI);
+	id = (u64_t)m->VMFB_IDHI << 32 | (u64_t)m->VMFB_IDLO;
 
 	blockid.id = id;
 	blockid.owner = vmp->vm_endpoint;
@@ -2717,8 +2717,10 @@ int do_yieldblockgetblock(message *m)
 		len += VM_PAGE_SIZE - len % VM_PAGE_SIZE;
 	}
 
-	yieldid = make64(m->VMYBGB_YIELDIDLO, m->VMYBGB_YIELDIDHI);
-	getid = make64(m->VMYBGB_GETIDLO, m->VMYBGB_GETIDHI);
+	yieldid = (u64_t)m->VMYBGB_YIELDIDHI << 32
+		| (u64_t)m->VMYBGB_YIELDIDLO;
+	getid = (u64_t)m->VMYBGB_GETIDHI << 32
+	      | (u64_t)m->VMYBGB_GETIDLO;
 
 	if(yieldid != VM_BLOCKID_NONE) {
 		/* A block was given to yield. */

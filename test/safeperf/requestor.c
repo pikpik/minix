@@ -106,7 +106,7 @@ int main(int argc, char **argv)
 		ep_granter, gid);
 
 	FIFO_WAIT(fid_get);
-	diff = make64(0, 0);
+	diff = 0;
 
 	if(is_map) {
 		/* Test safemap. */
@@ -120,7 +120,7 @@ int main(int argc, char **argv)
 			}
 			read_write_buff(buf, nr_pages*CLICK_SIZE, is_write);
 			read_tsc_64(&end);
-			diff = diff + sub64(end, start);
+			diff = diff + (end - start);
 			r = sys_safeunmap(D, (long)buf);
 			if(r != OK) {
 				printf("REQUESTOR: safeunmap error: %d\n", r);
@@ -143,7 +143,7 @@ int main(int argc, char **argv)
 			}
 			read_write_buff(buf, nr_pages*CLICK_SIZE, is_write);
 			read_tsc_64(&end);
-			diff = diff + sub64(end, start);
+			diff = diff + (end - start);
 		}
 		micros = ((double)tsc_64_to_micros(diff))
 			/ (NR_TEST_ITERATIONS*nr_pages);

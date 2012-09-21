@@ -117,7 +117,7 @@ static void estimate_cpu_freq(void)
 	tsc_delta = tsc1 - tsc0;
 	
 
-	cpu_freq = (tsc_delta / (PROBE_TICKS - 1)) * make64(system_hz, 0);
+	cpu_freq = (tsc_delta / (PROBE_TICKS - 1)) * (u64_t)system_hz;
 	cpu_set_freq(cpuid, cpu_freq);
 	cpu_info[cpuid].freq = (unsigned long)(cpu_freq / 1000000);
 	BOOT_VERBOSE(cpu_print_freq(cpuid));
@@ -354,7 +354,7 @@ short cpu_load(void)
 		idle_delta = *current_idle - *last_idle;
 
 		busy = tsc_delta - idle_delta;
-		busy = busy * make64(100, 0);
+		busy = busy * (u64_t)100;
 		load = (unsigned long)(busy / tsc_delta);
 
 		if (load > 100)

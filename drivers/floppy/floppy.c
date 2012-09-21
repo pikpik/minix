@@ -410,8 +410,8 @@ static struct device *f_prepare(dev_t device)
   if (f_fp->fl_density < NT) {
 	f_dp = &fdensity[f_fp->fl_density];
 	f_sectors = f_dp->secpt;
-	f_fp->fl_geom.dv_size = mul64u((long) (NR_HEADS * f_sectors
-					* f_dp->cyls), SECTOR_SIZE);
+	f_fp->fl_geom.dv_size = (u64_t)(NR_HEADS * f_sectors
+				* f_dp->cyls) * SECTOR_SIZE;
   }
 
   /* A partition? */
@@ -472,11 +472,12 @@ static ssize_t f_transfer(
   if (f_prepare(minor) == NULL) return(ENXIO);
 
   fp = f_fp;
-  dv_size = cv64ul(f_dv->dv_size);
+  dv_size = (f_dv->dv_size>>32) ? ULONG_MAX
+				: (unsigned long) f_dv->dv_size;
 
   if ((unsigned long)(pos64>>32) != 0)
 	return OK;	/* Way beyond EOF */
-  position= cv64ul(pos64);
+  position = (pos64>>32) ? ULONG_MAX : (unsigned long) pos64;
   total = 0;
 
   /* Record the direction of the last transfer performed. */

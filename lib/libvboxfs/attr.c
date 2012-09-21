@@ -21,7 +21,7 @@ static u64_t
 set_time(struct timespec *tsp)
 {
 
-	return mul64u(tsp->tv_sec, 1000000000) + tsp->tv_nsec;
+	return ((u64_t)tsp->tv_sec * 1000000000) + tsp->tv_nsec;
 }
 
 /*

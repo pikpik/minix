@@ -56,8 +56,8 @@ static int hello_close(message *UNUSED(m))
 
 static struct device * hello_prepare(dev_t UNUSED(dev))
 {
-    hello_device.dv_base = make64(0, 0);
-    hello_device.dv_size = make64(strlen(HELLO_MESSAGE), 0);
+    hello_device.dv_base = (u64_t)0;
+    hello_device.dv_size = (u64_t)strlen(HELLO_MESSAGE);
     return &hello_device;
 }
 

@@ -142,7 +142,7 @@ void parse_file(pid_t pid)
 
 	if (state != STATE_RUN)
 		p->p_flags |= BLOCKED;
-	p->p_cpucycles[0] = make64(cycles_lo, cycles_hi);
+	p->p_cpucycles[0] = (u64_t)cycles_hi << 32 | (u64_t)cycles_lo;
 	p->p_memory = 0L;
 
 	if (!(p->p_flags & IS_TASK)) {
@@ -160,9 +160,10 @@ void parse_file(pid_t pid)
 	for(i = 1; i < CPUTIMENAMES; i++) {
 		if(fscanf(fp, " %lu %lu",
 			&cycles_hi, &cycles_lo) == 2) {
-			p->p_cpucycles[i] = make64(cycles_lo, cycles_hi);
+			p->p_cpucycles[i] = (u64_t)cycles_hi << 32
+					  | (u64_t)cycles_lo;
 		} else	{
-			p->p_cpucycles[i] = make64(0, 0);
+			p->p_cpucycles[i] = 0;
 		}
 	}
 
@@ -393,13 +394,13 @@ char *cputimemodename(int cputimemode)
 u64_t cputicks(struct proc *p1, struct proc *p2, int timemode)
 {
 	int i;
-	u64_t t = make64(0, 0);
+	u64_t t = 0;
 	for(i = 0; i < CPUTIMENAMES; i++) {
 		if(!CPUTIME(timemode, i)) 
 			continue;
 		if(p1->p_endpoint == p2->p_endpoint) {
-			t = t + sub64(p2->p_cpucycles[i],
-				p1->p_cpucycles[i]);
+			t = t + (p2->p_cpucycles[i]
+				- p1->p_cpucycles[i]);
 		} else {
 			t = t + p2->p_cpucycles[i];
 		}

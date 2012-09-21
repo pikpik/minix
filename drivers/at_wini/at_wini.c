@@ -893,7 +893,7 @@ static int w_identify(void)
   w_testing = 0;
 
   /* Size of the whole drive */
-  wn->part[0].dv_size = mul64u(size, SECTOR_SIZE);
+  wn->part[0].dv_size = (u64_t)size * SECTOR_SIZE;
 
   /* Reset/calibrate (where necessary) */
   if (w_specify() != OK && w_specify() != OK) {
@@ -1899,7 +1899,7 @@ static int atapi_open(void)
  * size of the device to something big.  What is really needed is a generic
  * SCSI layer that does all this stuff for ATAPI and SCSI devices (kjb). (XXX)
  */
-  w_wn->part[0].dv_size = mul64u(800L*1024, 1024);
+  w_wn->part[0].dv_size = (u64_t)(800L*1024) * 1024;
   return(OK);
 }
 

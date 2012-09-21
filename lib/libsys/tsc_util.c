@@ -61,7 +61,7 @@ micro_delay(u32_t micros)
 	CALIBRATE;
 
 	/* We have to know when to end the delay. */
-	end = now + mul64u(micros, calib_mhz);
+	end = now + ((u64_t)micros * calib_mhz);
 
 	/* If we have to wait for at least one HZ tick, use the regular
 	 * tickdelay first. Round downwards on purpose, so the average
@@ -96,7 +96,7 @@ u32_t tsc_64_to_micros(u64_t tsc)
 
 u32_t tsc_to_micros(u32_t low, u32_t high)
 {
-	return tsc_64_to_micros(make64(low, high));
+	return tsc_64_to_micros((u64_t)high << 32 | (u64_t)low);
 }
 
 u32_t tsc_get_khz(void)

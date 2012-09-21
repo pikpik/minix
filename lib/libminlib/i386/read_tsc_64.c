@@ -9,6 +9,6 @@ u64_t* t;
 {
     u32_t lo, hi;
     read_tsc (&hi, &lo);
-    *t = make64 (lo, hi);
+    *t = (u64_t)hi << 32 | (u64_t)lo;
 }
 

@@ -98,7 +98,7 @@ static struct super_block sb;
  * btoa64 gives the byte address of a block
  */
 #define ztob(z)		((block_nr) (z) << sb.s_log_zone_size)
-#define btoa64(b)	(mul64u(b, block_size))
+#define btoa64(b)	((u64_t)b * block_size)
 #define SCALE		((int) ztob(1))	/* # blocks in a zone */
 #define FIRST		((zone_nr) sb.s_firstdatazone)	/* as the name says */
 
@@ -657,13 +657,13 @@ void chksuper()
 
 int inoblock(int inn)
 {
-  return (unsigned long)(mul64u(inn - 1, INODE_SIZE) / block_size)
+  return (unsigned long)(((u64_t)(inn - 1) * INODE_SIZE) / block_size)
 		+ BLK_ILIST;
 }
 
 int inooff(int inn)
 {
-  return (unsigned)(mul64u(inn - 1, INODE_SIZE) % block_size);
+  return (unsigned)(((u64_t)(inn - 1) * INODE_SIZE) % block_size);
 }
 
 /* Make a listing of the inodes given by `clist'.  If `repair' is set, ask

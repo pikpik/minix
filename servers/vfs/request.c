@@ -62,7 +62,7 @@ int req_breadwrite(
   if (r != OK) return(r);
 
   /* Fill in response structure */
-  *new_posp = make64(m.RES_SEEK_POS_LO, m.RES_SEEK_POS_HI);
+  *new_posp = (u64_t)m.RES_SEEK_POS_HI << 32 | (u64_t)m.RES_SEEK_POS_LO;
   *cum_iop = m.RES_NBYTES;
 
   return(OK);

@@ -90,7 +90,8 @@ int fs_bread(void)
   
   rw_flag = (fs_m_in.m_type == REQ_BREAD ? READING : WRITING);
   gid = fs_m_in.REQ_GRANT;
-  position = make64(fs_m_in.REQ_SEEK_POS_LO, fs_m_in.REQ_SEEK_POS_HI);
+  position = (u64_t)fs_m_in.REQ_SEEK_POS_HI << 32
+	   | (u64_t)fs_m_in.REQ_SEEK_POS_LO;
   nrbytes = (unsigned) fs_m_in.REQ_NBYTES;
   block_size = v_pri.logical_block_size_l;
   dir = v_pri.dir_rec_root;
@@ -303,7 +304,7 @@ int *completed;			/* number of bytes copied */
       ((unsigned long)position > dir->data_length_l)) {
     while ((dir->d_next != NULL) &&
            ((unsigned long)position > dir->data_length_l)) {
-      position = sub64ul(position, dir->data_length_l);
+      position = position - dir->data_length_l;
       dir = dir->d_next;
     }
   }

@@ -39,7 +39,7 @@ static void intel_arch_watchdog_init(const unsigned cpu)
 	while ((unsigned long)(cpuf>>32) ||
 	       (unsigned long)cpuf > 0x7fffffffU)
 		cpuf = cpuf / 2;
-	cpuf = make64(-(unsigned long)cpuf, (unsigned long)(cpuf>>32));
+	cpuf = (u64_t)cpuf | (u64_t)(-cpuf);
 	watchdog->resetval = watchdog->watchdog_resetval = cpuf;
 
 	ia32_msr_write(INTEL_MSR_PERFMON_CRT0, 0, (unsigned long)cpuf);
@@ -177,7 +177,7 @@ static int intel_arch_watchdog_profile_init(const unsigned freq)
 		return EINVAL;
 	}
 
-	cpuf = make64(-(unsigned long)cpuf, (unsigned long)(cpuf>>32));
+	cpuf = (u64_t)cpuf | (u64_t)(-cpuf);
 	watchdog->profile_resetval = cpuf;
 
 	return OK;

@@ -130,7 +130,7 @@ static int scan_hex64(char *input, u64_t *val)
 
 	lo = strtoul(input, NULL, 16);
 
-	*val = make64(lo, hi);
+	*val = ((u64_t)hi << 32) | (u64_t)lo;
 
 	return 1;
 }

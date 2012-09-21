@@ -1404,7 +1404,7 @@ void installboot(unsigned char *bootblock, char *masterboot)
 ssize_t boot_readwrite(int rw)
 /* Read (0) or write (1) the boot sector. */
 {
-	u64_t off64 = mul64u(offset, SECTOR_SIZE);
+	u64_t off64 = (u64_t)offset * SECTOR_SIZE;
 	int r = 0;
 
 #if __minix_vmd

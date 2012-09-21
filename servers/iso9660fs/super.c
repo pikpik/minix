@@ -100,7 +100,11 @@ int read_vds(
       continue;
 
     if ((sbbuf[0] & BYTE) == VD_PRIMARY) {
-      create_v_pri(v_pri,sbbuf,cv64ul(offset)); /* copy the buffer in the data structure. */
+      create_v_pri(
+        v_pri,
+        sbbuf,
+        (offset>>32) ? ULONG_MAX : (unsigned long)offset
+      ); /* copy the buffer in the data structure. */
     }
 
     if ((sbbuf[0] & BYTE) == VD_SET_TERM)

@@ -601,7 +601,8 @@ int bdev_restart_asyn(bdev_call_t *call)
 	bdev_rdwt_cleanup(&call->msg);
 
 	r = bdev_rdwt_setup(type, call->dev,
-		make64(call->msg.BDEV_POS_LO, call->msg.BDEV_POS_HI),
+		((u64_t)call->msg.BDEV_POS_HI << 32
+			| (u64_t)call->msg.BDEV_POS_LO),
 		(char *) call->vec[0].iov_addr, call->msg.BDEV_COUNT,
 		call->msg.BDEV_FLAGS, &call->msg);
 
@@ -612,7 +613,8 @@ int bdev_restart_asyn(bdev_call_t *call)
 	bdev_vrdwt_cleanup(&call->msg, call->gvec);
 
 	r = bdev_vrdwt_setup(type, call->dev,
-		make64(call->msg.BDEV_POS_LO, call->msg.BDEV_POS_HI),
+		(call->msg.BDEV_POS_HI << 32
+			| call->msg.BDEV_POS_LO),
 		call->vec, call->msg.BDEV_COUNT, call->msg.BDEV_FLAGS,
 		&call->msg, call->gvec);
 

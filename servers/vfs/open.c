@@ -643,7 +643,7 @@ int do_lseek()
   if (offset >= 0)
 	newpos = pos + offset;
   else
-	newpos = sub64ul(pos, -offset);
+	newpos = pos - -offset;
 
   /* Check for overflow. */
   if ((unsigned long)(newpos>>32) != 0) {
@@ -700,7 +700,7 @@ int do_llseek()
     default: unlock_filp(rfilp); return(EINVAL);
   }
 
-  newpos = pos + make64(off_lo, off_hi);
+  newpos = pos + ((u64_t)off_hi << 32 | (u64_t)off_lo);
 
   /* Check for overflow. */
   if ((off_hi > 0) && newpos < pos)

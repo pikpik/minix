@@ -55,7 +55,8 @@ struct buf *get_block(
 
   int b;
   static struct buf *bp, *prev_ptr;
-  u64_t yieldid = VM_BLOCKID_NONE, getid = make64(dev, block);
+  u64_t yieldid = VM_BLOCKID_NONE, getid = (u64_t)block << 32
+					 | (u64_t)dev;
   int vmcache = 0;
 
   assert(buf_hash);
@@ -155,7 +156,7 @@ struct buf *get_block(
 	/* Are we throwing out a block that contained something?
 	 * Give it to VM for the second-layer cache.
 	 */
-	yieldid = make64(bp->b_dev, bp->b_blocknr);
+	yieldid = (u64_t)bp->b_blocknr << 32 | (u64_t)bp->b_dev;
 	assert(bp->b_bytes == fs_block_size);
 	bp->b_dev = NO_DEV;
   }
@@ -295,7 +296,7 @@ static void rw_block(
   dev_t dev;
 
   if ( (dev = bp->b_dev) != NO_DEV) {
-	pos = mul64u(bp->b_blocknr, fs_block_size);
+	pos = (u64_t)bp->b_blocknr * fs_block_size;
 	if (rw_flag == READING)
 		r = bdev_read(dev, pos, bp->b_data, fs_block_size,
 			BDEV_NOFLAGS);
@@ -419,7 +420,7 @@ void rw_scattered(
 		iop->iov_addr = (vir_bytes) bp->b_data;
 		iop->iov_size = (vir_bytes) fs_block_size;
 	}
-	pos = mul64u(bufq[0]->b_blocknr, fs_block_size);
+	pos = (u64_t)bufq[0]->b_blocknr * fs_block_size;
 	if (rw_flag == READING)
 		r = bdev_gather(dev, pos, iovec, j, BDEV_NOFLAGS);
 	else

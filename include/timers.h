@@ -76,7 +76,7 @@ clock_t tmrs_settimer(timer_t **tmrs, timer_t *tp, clock_t exp_time,
 #define RESET_STATS(starttime, cum_instances, cum_spenttime, cum_starttime) { \
 		cum_instances = 0;				\
 		cum_starttime = starttime;			\
-		cum_spenttime = make64(0,0);			\
+		cum_spenttime = 0;				\
 }
 
 #define TIME_BLOCK_VAR(timed_code_block, time_interval) do {	\
@@ -87,7 +87,7 @@ clock_t tmrs_settimer(timer_t **tmrs, timer_t *tp, clock_t exp_time,
 	read_tsc_64(&_starttime);				\
 	do { timed_code_block } while(0);			\
 	read_tsc_64(&_endtime);					\
-	_dt = sub64(_endtime, _starttime);			\
+	_dt = _endtime - _starttime;				\
 	if(_cum_instances == 0) {				\
 		RESET_STATS(_starttime, _cum_instances, _cum_spenttime, _cum_starttime); \
 	 }							\
@@ -98,8 +98,8 @@ clock_t tmrs_settimer(timer_t **tmrs, timer_t *tp, clock_t exp_time,
 	} 							\
 	_cum_spenttime = _cum_spenttime + _dt;			\
 	_cum_instances++;					\
-	_cum_dt = sub64(_endtime, _cum_starttime);		\
-	if((u64_t)_cum_dt > make64(0, 120)) {			\
+	_cum_dt = _endtime - _cum_starttime;			\
+	if((u64_t)_cum_dt > (u64_t)(120<<32 | 0)) {		\
 		PRINT_STATS(_cum_spenttime, _cum_instances);	\
 		RESET_STATS(_starttime, _cum_instances, _cum_spenttime, _cum_starttime); 	\
 	} 							\
