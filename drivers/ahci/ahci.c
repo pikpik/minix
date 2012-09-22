@@ -363,7 +363,7 @@ static int atapi_read_capacity(struct port_state *ps, int cmd)
 	dprintf(V_INFO,
 		("%s: medium detected (%u byte sectors, %lu MB size)\n",
 		ahci_portname(ps), ps->sector_size,
-		(usigned long)((ps->lba_count * ps->sector_size)
+		(unsigned long)((ps->lba_count * ps->sector_size)
 			/ 1024*1024)));
 
 	return OK;
