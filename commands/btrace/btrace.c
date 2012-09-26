@@ -141,9 +141,7 @@ static void dump_entry(btrace_entry *entry)
   case BTREQ_WRITE:
   case BTREQ_GATHER:
   case BTREQ_SCATTER:
-	printf("- position:\t%08lx%08lx\n",
-		(unsigned long)(entry->position>>32),
-		(unsigned long)(entry->position));
+	printf("- position:\t%016llx\n", entry->position);
 	printf("- size:\t\t%u\n", entry->size);
 	printf("- flags:\t%x\n", entry->flags);
 	break;
