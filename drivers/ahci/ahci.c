@@ -363,8 +363,8 @@ static int atapi_read_capacity(struct port_state *ps, int cmd)
 	dprintf(V_INFO,
 		("%s: medium detected (%u byte sectors, %lu MB size)\n",
 		ahci_portname(ps), ps->sector_size,
-		(unsigned long)((ps->lba_count * ps->sector_size)
-			/ 1024*1024)));
+		((ps->lba_count * ps->sector_size)
+		/ 1024*1024)));
 
 	return OK;
 }
@@ -480,10 +480,10 @@ static int atapi_transfer(struct port_state *ps, int cmd, u64_t start_lba,
 	/* Fill in a packet. */
 	memset(packet, 0, sizeof(packet));
 	packet[0] = write ? ATAPI_CMD_WRITE : ATAPI_CMD_READ;
-	packet[2] = ((unsigned long)start_lba >> 24) & 0xFF;
-	packet[3] = ((unsigned long)start_lba >> 16) & 0xFF;
-	packet[4] = ((unsigned long)start_lba >>  8) & 0xFF;
-	packet[5] = (unsigned long)start_lba & 0xFF;
+	packet[2] = (start_lba >> 24) & 0xFF;
+	packet[3] = (start_lba >> 16) & 0xFF;
+	packet[4] = (start_lba >>  8) & 0xFF;
+	packet[5] = start_lba & 0xFF;
 	packet[6] = (count >> 24) & 0xFF;
 	packet[7] = (count >> 16) & 0xFF;
 	packet[8] = (count >>  8) & 0xFF;
@@ -527,9 +527,9 @@ static int ata_id_check(struct port_state *ps, u16_t *buf)
 	}
 
 	/* Get number of LBA blocks, and sector size. */
-	ps->lba_count = ((u64_t)((buf[ATA_ID_LBA3] << 16)
+	ps->lba_count = (((buf[ATA_ID_LBA3] << 16)
 	                         | buf[ATA_ID_LBA2]) << 32)
-	              | (u64_t)((buf[ATA_ID_LBA1] << 16)
+	              | ((buf[ATA_ID_LBA1] << 16)
 	                        | buf[ATA_ID_LBA0]);
 
 	/* Determine the queue depth of the device. */
@@ -612,8 +612,8 @@ static int ata_transfer(struct port_state *ps, int cmd, u64_t start_lba,
 			fis.cf_cmd = ATA_CMD_READ_DMA_EXT;
 		}
 	}
-	fis.cf_lba = (unsigned long)start_lba & 0x00FFFFFFL;
-	fis.cf_lba_exp = (unsigned long)(start_lba >> 24) & 0x00FFFFFFL;
+	fis.cf_lba = start_lba & 0x00FFFFFFL;
+	fis.cf_lba_exp = (start_lba >> 24) & 0x00FFFFFFL;
 	fis.cf_sec = count & 0xFF;
 	fis.cf_sec_exp = (count >> 8) & 0xFF;
 
@@ -1124,9 +1124,8 @@ static ssize_t port_transfer(struct port_state *ps, u64_t pos, u64_t eof,
 	if ((r = sum_iovec(ps, endpt, iovec, nr_req, &size)) != OK)
 		return r;
 
-	dprintf(V_REQ, ("%s: %s for %lu bytes at pos %08lx%08lx\n",
-		ahci_portname(ps), write ? "write" : "read", size,
-		(unsigned long)(pos>>32), (unsigned long)pos));
+	dprintf(V_REQ, ("%s: %s for %lu bytes at pos %016llx\n",
+		ahci_portname(ps), write ? "write" : "read", size, pos));
 
 	assert(ps->state == STATE_GOOD_DEV);
 	assert(ps->flags & FLAG_HAS_MEDIUM);
