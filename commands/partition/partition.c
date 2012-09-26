@@ -307,17 +307,17 @@ void geometry(void)
 		geometry.sectors   = 32;
 		geometry.heads     = 64;
 		geometry.cylinders = (sb.st_size - 1) / SECTOR_SIZE
-			/ (geometry.sectors*geometry.heads) + 1;
+			/ (geometry.sectors * geometry.heads) + 1;
 	}
 	close(fd);
-	primary.lowsec = (unsigned long)(geometry.base / SECTOR_SIZE);
-	primary.size = (unsigned long)(geometry.size / SECTOR_SIZE);
+	primary.lowsec = geometry.base / SECTOR_SIZE;
+	primary.size = geometry.size / SECTOR_SIZE;
 	cylinders = geometry.cylinders;
 	heads = geometry.heads;
 	sectors = geometry.sectors;
 
 	/* Is this a primary partition table?  If so then pad partitions. */
-	pad= (!mflag && primary.lowsec == 0);
+	pad = (!mflag && primary.lowsec == 0);
 }
 
 void boundary(struct part_entry *pe, int exp)
