@@ -30,11 +30,8 @@ static int usage(char *name)
 
 static void print_rule(struct fbd_rule *rule)
 {
-	printf("%-2d %04lX%08lX-%04lX%08lX %-4d %-5d %c%c ",
-		rule->num, (unsigned long)(rule->start>>32),
-		(unsigned long)rule->start,
-		(unsigned long)(rule->end>>32),
-		(unsigned long)rule->end, rule->skip,
+	printf("%-2d %012llX-%012llX %-4d %-5d %c%c ",
+		rule->num, rule->start, rule->end, rule->skip,
 		rule->count, (rule->flags & FBD_FLAG_READ) ? 'r' : ' ',
 		(rule->flags & FBD_FLAG_WRITE) ? 'w' : ' ');
 
@@ -67,12 +64,10 @@ static void print_rule(struct fbd_rule *rule)
 		break;
 
 	case FBD_ACTION_MISDIR:
-		printf("%-7s %04lX%08lX-%04lX%08lX %u",
+		printf("%-7s %012llX-%012llX %u",
 			"misdir",
-			(unsigned long)(rule->params.misdir.start>>32),
-			(unsigned long)rule->params.misdir.start,
-			(unsigned long)(rule->params.misdir.end>>32),
-			(unsigned long)rule->params.misdir.end,
+			rule->params.misdir.start,
+			rule->params.misdir.end,
 			rule->params.misdir.align);
 		break;
 
