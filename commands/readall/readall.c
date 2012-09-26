@@ -117,13 +117,13 @@ char *argv[];
   	perror("ioctl DIOCGETP");
   	return 1;
   }
-  nblocks = (unsigned long)(entry.size / BLOCK_SIZE);
+  nblocks = entry.size / BLOCK_SIZE;
 
   time(&starttime);
   /* Read the entire file. Try it in large chunks, but if an error
    * occurs, go to single reads for a while. */
   while (1) {
-	if(lseek64(fd, (u64_t)BLOCK_SIZE * b, SEEK_SET, NULL) < 0) {
+	if(lseek64(fd, BLOCK_SIZE * b, SEEK_SET, NULL) < 0) {
 		perror("lseek64");
 		return 1;
 	}
