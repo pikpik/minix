@@ -248,8 +248,8 @@ int main(int argc, char **argv)
 	if (diocntl(hdst.st_rdev, DGETP, &whole) < 0) fatal(dev_file);
 
 	/* Use sector numbers. */
-	base = (unsigned long)(whole.base / SECTOR_SIZE);
-	size = (unsigned long)(whole.size / SECTOR_SIZE);
+	base = whole.base / SECTOR_SIZE;
+	size = whole.size / SECTOR_SIZE;
 	limit = base + size;
 
 	show_part(dev_file, base, size);
@@ -270,8 +270,8 @@ int main(int argc, char **argv)
 			pe->size= part_limit - pe->lowsec;
 		}
 
-		entry.base = (u64_t)pe->lowsec * SECTOR_SIZE;
-		entry.size= (u64_t)pe->size * SECTOR_SIZE;
+		entry.base = pe->lowsec * SECTOR_SIZE;
+		entry.size= pe->size * SECTOR_SIZE;
 		if (diocntl(makedev(hd_major, device), DSETP, &entry) < 0)
 			fatal(dev_file);
 
