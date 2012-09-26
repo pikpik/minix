@@ -47,6 +47,6 @@ char *device;
   	exit(1);
   }
   close(fd);
-  d = (unsigned long)(entry.size / 512);
+  d = entry.size / 512;
   return d;
 }
