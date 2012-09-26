@@ -483,10 +483,8 @@ void geometry(void)
 		if (ioctl(device, DIOCGETP, &geometry) < 0)
 			err= errno;
 		else {
-			table[0].lowsec = (unsigned long)(geometry.base
-						/ SECTOR_SIZE);
-			table[0].size = (unsigned long )(geometry.size
-						/ SECTOR_SIZE);
+			table[0].lowsec = geometry.base / SECTOR_SIZE;
+			table[0].size = geometry.size / SECTOR_SIZE;
 			cylinders = geometry.cylinders;
 			heads = geometry.heads;
 			sectors = geometry.sectors;
@@ -554,10 +552,8 @@ void geometry(void)
 	 * This makes sense for subpartitioning primary partitions.
 	 */
 	if (precise && ioctl(device, DIOCGETP, &geometry) >= 0) {
-		table[0].lowsec = (unsigned long)(geometry.base
-					/ SECTOR_SIZE);
-		table[0].size = (unsigned long)(geometry.size
-					/ SECTOR_SIZE);
+		table[0].lowsec = geometry.base / SECTOR_SIZE;
+		table[0].size = geometry.size / SECTOR_SIZE;
 	} else {
 		precise = 0;
 	}
@@ -1584,7 +1580,7 @@ void installboot(unsigned char *bootblock, char *masterboot)
 ssize_t boot_readwrite(int rw)
 /* Read (0) or write (1) the boot sector. */
 {
-	u64_t off64 = (u64_t)offset * SECTOR_SIZE;
+	u64_t off64 = offset * SECTOR_SIZE;
 	int r;
 
 #if __minix_vmd
